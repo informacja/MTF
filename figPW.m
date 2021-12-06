@@ -1,24 +1,28 @@
 % function [outputArg1,outputArg2] = (saveAs, OverwrieProtection)
- function figPW(nrPliku, nrKol, ext, katalog, wariantNazw)
+function figPW(nrPliku, nrKol, ext, katalog, wariantNazw)
 if(nargin<5) wariantNazw=1; end;
 if(nargin<4) katalog='figury\'; end;
 if(nargin<3) ext ='fig'; end;
 if(nargin<2) % jeœli jeden parametr    
     fTitle = '_'; % do zapisywanej nazwy pliku
-    nrName = get( get(gcf,'Number'), 'Name' )
-    h1=get(gca,'title');
-    titre=get(h1,'string')
-    if( isempty(titre) )    
-        title( datestr(now,'yyyy-mm-dd HH:MM:ss') ); % default timestamp title
-    else
-        fTitle = ['_' titre '_' ];
+    nrName = get( get(gcf,'Number'), 'Name' );
+    if(nargin > 1 && nrPliku < 0  )
+        h1=get(gca,'title');
+        titre=get(h1,'string');
+        if( isempty(titre) )
+            title( datestr(now,'yyyy-mm-dd HH.MM.ss') ); % default timestamp title
+            titre=get(h1,'string');
+        else
+            fTitle = ['_' titre '_' ];
+        end
     end
 % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
 % xlabel('Oœ rzeczywista'); ylabel('Oœ urojona'); 
 % legend(str{:}); 
     [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd());                      % nazwa TEGO *.m-pliku
     print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng'); % Zapisz jako tenMPlik_nrOstatniejFigury.png
-    return
+     fprintf("\n\t*%s", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
+     return
 end 
 
 h=gcf;

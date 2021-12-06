@@ -10,4 +10,9 @@ function [bf, af, Amp, Phase, Wco, iT]=designButter(Tu,rzad,Lxf,fig,kolorB)
 % iT ostatni indeks dla Amp(iT).0.09
 ```
 
-![](figury/Fig_P2K2.png)
+![](figury/Fig_P2K2.png) 
+
+> Czy w spektrum powinniśmy widzieć dwa piki?>
+>![](figury/MTFkody_11.png) 
+>
+>![](figury/MTFkody_1050Hz.png) 
