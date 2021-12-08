@@ -1,46 +1,78 @@
-Big = 1; % sourse of data (from DB or one file
-% close all
-folder = '.\dane\';  
-if(Big) folder = '.\data\';  fnames = folder; 
+% wczytajEMG
+if(~BigData) 
+    folder = './dane/';  
+    fnames = 'dane/50Hz.wav';
+    fnames = 'spoczynek.wav';
+    fnames = 'zginanie.wav';
+    fnames = 'dane/zginanie2.wav';    
+    fnames = 'zaciÅ›niÄ™ta_piÄ™Å›Ä‡_statycznie.wav';
+    fnames = 'zaciÅ›niÄ™ta_piÄ™Å›Ä‡_dynamicznie.wav'; %'../bioniczna/bioniczna/data/01108.wav'
+
+    fnames = '7sZginanie.wav';
+    fnames = '7podnoszeniebranchusradialis.wav';
+    fnames = '7kciukwgorÄ™.wav';
+    fnames3 = '7szybkieRuszanienaprzemienne/kciuk.wav';
+    fnames = '7szybkieRuszanienaprzemienne/wskazujÄ…cy.wav';
+    fnames2 = '7szybkieRuszanienaprzemienne/srodkowy.wav';
+    fnames = '7szybkieRuszanienaprzemienne/serdeczny.wav';
+    fnames = '7szybkieRuszanienaprzemienne/maÅ‚y.wav'; %../bioniczna/bioniczna/data/01108.wav'
+    [data, fs] = audioread( strcat(folder, fnames)); %data = data(:,2);
+    data2 = audioread(strcat(folder, fnames));
+    data3 = audioread(strcat(folder, fnames));
+        tau = 2;
+        yT = data'; n =length(data);
+        Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
+        
+        [W,D] = eig(yT*yT',Q);    
+        S = W'*yT;    
+        Y = S';
+
+    if (BSSfirst > 0)       data = [Y data]; 
+    elseif (BSSfirst < 0)   data = [data Y]; 
+    else                    data = [data]; 
+    end   
+
+else folder = '.\data\';  fnames = folder; 
     selectPersonNr = [108]; % 66:109 / 55
-    selectGestureNr = [ 0 ]; % 0 1 2 11 13
+    selectGestureNr = [ 2 ]; % 0 1 2 11 13
     fnames = folder+...
-        "PERSON(" +min(selectPersonNr)+':'+max(selectPersonNr)+...
+        "PERSON(" +min(selectPersonNr)+'do'+max(selectPersonNr)+...
         ") GESTURE"+mat2str(selectGestureNr);
 % Gestures numeration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % x 00 - Reference noise 
 % x 01 - Moutz power
-% x 02 - A clenched fistZaciœniêta piêœæ, kciuk na zewn¹trz
+% x 02 - A clenched fistZaciÅ›niÄ™ta piÄ™Å›Ä‡, kciuk na zewnÄ…trz
 %   03 - Gest OK
-%   04 - Pointing  - palec wskazuj¹cy
-% c 05 - Thumbs up - kciuk w górê
-%   06 - Call me   - s³uchawka
-%   07 - £apwica
-%   08 - Otwieranie d³oni
-%   09 - Zginanie palców po kolei
+%   04 - Pointing  - palec wskazujÄ…cy
+% c 05 - Thumbs up - kciuk w gÃ³rÄ™
+%   06 - Call me   - sÅ‚uchawka
+%   07 - Åapwica
+%   08 - Otwieranie dÅ‚oni
+%   09 - Zginanie palcÃ³w po kolei
 %   10 - trzymanie przedmiotu
 % z 11 - Victoria - statyczne
 %   12 - odlicznie - dynamiczne
-% z 13 - Three middle fingers closer - 3 palce œrodkowe  statyczne
+% z 13 - Three middle fingers closer - 3 palce Å›rodkowe  statyczne
 %   14 - moc - dynamiczne
-%   15 - piêœæ-dynamiczne
+%   15 - piÄ™Å›Ä‡-dynamiczne
 %   16 - victoria dynamiczne
-%   17 - 3 œrodkowe palce razem - dynamiczne
-% c 18 - serdeczny palec w œrodek d³oni (like Spiderman)
+%   17 - 3 Å›rodkowe palce razem - dynamiczne
+% c 18 - serdeczny palec w Å›rodek dÅ‚oni (like Spiderman)
 %   19 - malypalec
-end % Big
+
+
 
 dataSource = fullfile(folder, '*.wav'); 
 file = dir(dataSource);
 
-rawData = [];      % featVectBion matrix 
+data = [];      % featVectBion matrix 
 labelsVector = []; % Vertical vector gesture numbers
 
 for fileNo = 1:length(file)
     s = file(fileNo).name;
     
-    if(Big) % filtration
+    if(BigData) % filtration
         tempPersonNumber = str2double(s(3:5));  % personNumber 
         if( length(selectPersonNr) )
             if( selectPersonNr ~= tempPersonNumber ) continue; end 
@@ -48,7 +80,7 @@ for fileNo = 1:length(file)
 
         tempGestureNumber = str2double(s(1:2)); % gestureNumber 
         if( length(tempGestureNumber))
-            if( selectGestureNr ~= tempGestureNumber ) continue; end % pomijaj wy¿sze numery gestu i referencyjny   
+            if( selectGestureNr ~= tempGestureNumber ) continue; end % pomijaj wyÅ¼sze numery gestu i referencyjny   
         end
         
         labelsVector = [labelsVector; tempGestureNumber];
@@ -74,11 +106,12 @@ for fileNo = 1:length(file)
 %         y(:,i)=(tempData(:,i)-yMean(i))/ySigma(i);
 %     end 
     nfig=tempPersonNumber+1; ch = 1;
-    figure(nfig); plot(y(:,ch)); hold on; title(strcat(file(fileNo).name, ' Kana³(:,',int2str(ch),')'));
+    figure(nfig); plot(y(:,ch)); hold on; title(strcat(file(fileNo).name, ' KanaÅ‚(:,',int2str(ch),')'));
     figpos = {'north','south','east','west','northeast','northwest','southeast','southwest','center','onscreen'};
     movegui(cell2mat( figpos(mod(nfig,length(figpos)-1)+1) ));
 %     figure(2*tempGestureNumber+3), plot(audioread(s)); hold on;title(file(fileNo).name);
 %     legend; figure(tempPersonNumber);plot(audioread(s));
-    rawData = [rawData; y]; %dodanie info o nr gestu
+    data = [data; y]; %dodanie info o nr gestu
         
 end
+end % BigData

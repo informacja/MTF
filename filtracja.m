@@ -36,7 +36,33 @@
                 [lf,N1]=size(F0); [lf,N2]=size(Ff); N1f=N1+1; nh1=M/Tu;
                 MTFd(ntypZ,nrf).Tu=Tu;MTFd(ntypZ,nrf).M=M; MTFd(ntypZ,nrf).F0=F0; MTFd(ntypZ,nrf).Fzw=Fzw;
                 MTFd(ntypZ,nrf).Ff=Ff; MTFd(ntypZ,nrf).Ffshf=Ffshf;
-                if(nrf==1) Fzwd=Fzw; MTud=M; else Fzwd2=Fzw; MTud2=M; end
+                if(nrf==1) Fzwd=Fzw; MTud=M; Ffd=Ff; lfd=lf; N2d=length(Ffd(1,:));
+                    if(LFd==1) Ffc=Ff; Ffd=[]; Fzwc=Fzwd; Lzwc=lfd; end
+                else Fzwd2=Fzw; MTud2=M; 
+                    % ================= Filtr koncowy ==================
+                    Ff2=Ff(:,N2); Ff1=Ffd(:,N2d-N2:N2d); Nxd=N2+1;
+                    %n=lfd; 
+                    %w(n-N2:n)=Y(n-lfd+1:n)*Ff1(:,1:Nxd);
+                    %yz(n)=w(n-N2:n)*Ff2(N2+1:lf,1);
+                    Ffc=Ff1(:,1:Nxd)*Ff2(N2+1:lf,1); Ff1=[];
+                    % ================= Filtr centralny ==================
+                    if(0)
+                        n=lfd+lf+20; w=[]; w1=[];
+                        for(k=1:lf) w(n-lf+k:n)=Y(n-(lf+lfd)+k+1:n-lf+k)*Fzwd; end
+                        for(k=1:lf) w1(n-lf+k:n)=Y(n-(lf+lfd)+2:n)*[zeros(k-1,1);Fzwd;zeros(lf-k,1)]; end
+                        %yz(n)=w(n-lf+1:n)*Fzw(1:lf,1);
+                    end
+                    Lzwc=lf+lfd-1; Fzwc=zeros(Lzwc,1); %Fzwc1=zeros(Lzwc,1);  
+                    for(m=1:lf+lfd-1) % obliczamy filtr Fzwc
+                        %for(k=1:lf) W=[zeros(k-1,1);Fzwd;zeros(lf-k,1)]; Fzwc1(m)=Fzwc1(m)+W(m)*Fzw(k); end
+                        for(k=1:lf) 
+                            j=m-k+1; if(j<1) break; end, if(j>lfd) continue; end, 
+                            Fzwc(m)=Fzwc(m)+Fzwd(j)*Fzw(k); 
+                        end
+                    end
+                    nx=[]; %find(abs(Fzwc1-Fzwc)>1.e-8); 
+                    if(length(nx)==0) Fzwc1=[]; W=[]; w=[]; w1=[]; end, % To znaczy, że jest OK !!
+                end
             else
                 M=MTFd(ntypZ,nrf).M; F0=MTFd(ntypZ,nrf).F0; Fzw=MTFd(ntypZ,nrf).Fzw; Ff=MTFd(ntypZ,nrf).Ff; Ffshf=MTFd(ntypZ,nrf).Ffshf;
                 [lf,N1]=size(F0); [lf,N2]=size(Ff); N1f=N1+1; nh1=M/Tu;
