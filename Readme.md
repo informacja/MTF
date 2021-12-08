@@ -14,7 +14,8 @@ https://nba.uth.tmc.edu/neuroscience/m/s3/chapter01.html
 
 Eksperyment przeprowadzono z udziałem 109 osób. Do zapisu wykożystano format WAVE. Pojedynczy plik zawiera 8 kanałów nieskompresowanego sygnału EMG z próbkowanego 2048 razy na sekundę.
 Do pomiaru przygotowano instukcję z animacją gestów. https://github.com/informacja/EMG/tree/master/matlab/instrukcja#readme
-Proponowany przebieg nagrywania w 7mio sekundowym oknie 5 sekund aktywności i 1-no sekundowe marginesy bezczynności (ze względu na sekcje początkową i kńcową filtra MTF).
+Proponowany przebieg nagrywania w 7-mio sekundowym oknie 5 sekund aktywności i 1-no sekundowe marginesy bezczynności (ze względu na sekcje początkową i kńcową filtra MTF).
+Badany sygnał ma częstotliwość próbkowania 2048 na sekundę.
 
 Konfiguracja aplikacji EMGAnalyzer transferującej sygnał użyteczny.
 ```cpp
@@ -43,21 +44,9 @@ Model SNR
 Obniżanie wagi kolejnych dowodów po jawnym wyborze
 Dyskusja
 Podziękowanie
-$$
-\Huge e^{i\pi} + 1 = 0
-$$
-<img src="https://latex.codecogs.com/gif.latex?P(s | O_t )=\text { Probability of a sensor reading value when sleep onset is observed at a time bin } t " />
-  
-![equation](http://latex.codecogs.com/gif.latex?P%28s%20%7C%20O_t%20%29%3D%5Ctext%20%7B%20Probability%20of%20a%20sensor%20reading%20value%20when%20sleep%20onset%20is%20observed%20at%20a%20time%20bin%20%7D%20t)
-```math
-SE = \frac{\sigma}{\sqrt{n}}
-```
-<pre xml:lang="latex">\sqrt{2}</pre>
-Procedury dopasowania
-    Od 2000 próbki do N - 1 sekunda
+<!-- 
+<img src="https://latex.codecogs.com/gif.latex?P(s | O_t )=\text { Probability of a sensor reading value when sleep onset is observed at a time bin } t " /> -->
 
-Badany sygnał ma częstotliwość próbkowania 2048 na sekundę.
-Eksperymenty dobrano na 5 i 7 sekund.
 
 ### Synteza filtru MTF
 >![Butter1](figury/Synteza1.png) 
@@ -82,7 +71,6 @@ designButter(Tud, 5, lT, 1)
 ![Butter1](figury/Butter1.png) 
 
 ## Praca z danymi
-
 
 ![](figury/Fig_P2K2.png) 
 

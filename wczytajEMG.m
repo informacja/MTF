@@ -1,12 +1,12 @@
 Big = 1; % sourse of data (from DB or one file
-
+% close all
 folder = '.\dane\';  
 if(Big) folder = '.\data\';  fnames = folder; 
-    selectPersonNr = [66:109]; % 66:109
-    selectFeaturesNr = [1]; % 0 1 2 11 13
+    selectPersonNr = [108]; % 66:109 / 55
+    selectGestureNr = [ 0 ]; % 0 1 2 11 13
     fnames = folder+...
         "PERSON(" +min(selectPersonNr)+':'+max(selectPersonNr)+...
-        ") GESTURE"+mat2str(selectFeaturesNr);
+        ") GESTURE"+mat2str(selectGestureNr);
 % Gestures numeration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % x 00 - Reference noise 
@@ -48,7 +48,7 @@ for fileNo = 1:length(file)
 
         tempGestureNumber = str2double(s(1:2)); % gestureNumber 
         if( length(tempGestureNumber))
-            if( selectFeaturesNr ~= tempGestureNumber ) continue; end % pomijaj wy¿sze numery gestu i referencyjny   
+            if( selectGestureNr ~= tempGestureNumber ) continue; end % pomijaj wy¿sze numery gestu i referencyjny   
         end
         
         labelsVector = [labelsVector; tempGestureNumber];
@@ -72,8 +72,11 @@ for fileNo = 1:length(file)
 
 %     for i = 1:size(tempData, 2) % standaryzacja
 %         y(:,i)=(tempData(:,i)-yMean(i))/ySigma(i);
-%     end
-%     figure(tempGestureNumber+1), plot(tempData); hold on; title(file(fileNo).name);
+%     end 
+    nfig=tempPersonNumber+1; ch = 1;
+    figure(nfig); plot(y(:,ch)); hold on; title(strcat(file(fileNo).name, ' Kana³(:,',int2str(ch),')'));
+    figpos = {'north','south','east','west','northeast','northwest','southeast','southwest','center','onscreen'};
+    movegui(cell2mat( figpos(mod(nfig,length(figpos)-1)+1) ));
 %     figure(2*tempGestureNumber+3), plot(audioread(s)); hold on;title(file(fileNo).name);
 %     legend; figure(tempPersonNumber);plot(audioread(s));
     rawData = [rawData; y]; %dodanie info o nr gestu
