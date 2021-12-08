@@ -502,7 +502,7 @@ end %Lgestow
 %% ================= Sprawdzenie filtracji Fzwdc: yTrc wg Fzwdc, yTr - metodą dwuetapową Fzwd i Fzw2 ============
 m = 1; yTrc = []; for(n = Lzwc:Nf) yTrc(m) = Yoryg(n - Lzwc + 1:n)' * Fzwc; m = m + 1; end
 figure(1); subplot(1, 1, 1); plot(nY1Tr:nYfTr, yTrc, 'r', nY1Tr:nYfTr, yTr, 'k'); axis('tight');
-nx = find(abs(yTrc(1:length(yTr)) - yTr) > 1.e-8); mm = length(nx), title('Sprawdzenie filtracji Fzwdc: ');
+nx = find(abs(yTrc(1:length(yTr)) - yTr) > 1.e-8); mm = length(nx); title('Sprawdzenie filtracji Fzwdc: ');
 c = 1; % % =========================================================================================================
 sgtitle(sprintf('Trendy ')); %z Blind Source Separation /nCzerwony zaporowy/n szerokoprzepustowy/n poprawka
 fprintf('\nCzas wykonywania obliczeń i rysowania: %gs', toc(tStart));
