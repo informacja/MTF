@@ -1,7 +1,7 @@
 % widmo mocy, porownywane rendow% suma kwadratow roznic
 clear all;  tStart = tic;
 Takcji = 5000; %5*392;
-Symul = 0; wgEnerg = 2; Integr = 1; BigData = 0; BSSfirst = -1;  % sourse of data (from DB or one file
+Symul = 0; wgEnerg = 0; Integr = 0; BigData = 0; BSS = 1;  % sourse of data (from DB or one file
 % Integr=0 sygnał pomiarowy bez zsumowania (orygin.); Integr=1 sygnał pomiarowy zsumowany;
 % wgEnerg=0 synal przetw. wg Integr jest filtrowany i liczony tylko raz;
 % wgEnerg>0 synal przetw. wg Integr jest filtrowany, a potem liczymy Y^2 (liczony dwa razy)
@@ -508,8 +508,9 @@ sgtitle(sprintf('Trendy ')); %z Blind Source Separation /nCzerwony zaporowy/n sz
 fprintf('\nCzas wykonywania obliczeń i rysowania: %gs', toc(tStart));
 
 [path, filename, Fext] = fileparts(fnames);
-figure(nFig); figPW(sprintf('%s_S%dE%dI%dB%dfig', filename, Symul, wgEnerg, Integr, BSSfirst));
-figure(11); figPW(sprintf('%s_S%dE%dI%dB%dfig', filename, Symul, wgEnerg, Integr, BSSfirst), 11, 'fig', 'figury/', 2);
+figLetter = char(65+2^0*BSS+2^1*wgEnerg+2^2*Integr+2^3*BigData+2^4*Symul); char(65+figLetter); % figure countig num
+figure(nFig); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS));
+figure(11); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS), 11, 'fig', 'figury/', 2);
 
 % zapiszFig('3');
 % Test widma: Tw.Parsevala - energia sygnaĹ‚u=Ĺ›rednia(widma mocy):

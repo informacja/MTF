@@ -9,13 +9,13 @@ if(~BigData)
     fnames = 'zaciśnięta_pięść_dynamicznie.wav'; %'../bioniczna/bioniczna/data/01108.wav'
 
     fnames = '7sZginanie.wav';
-    fnames = '7podnoszeniebranchusradialis.wav';
-    fnames = '7kciukwgorę.wav';
-    fnames3 = '7szybkieRuszanienaprzemienne/kciuk.wav';
-    fnames = '7szybkieRuszanienaprzemienne/wskazujący.wav';
-    fnames2 = '7szybkieRuszanienaprzemienne/srodkowy.wav';
-    fnames = '7szybkieRuszanienaprzemienne/serdeczny.wav';
-    fnames = '7szybkieRuszanienaprzemienne/mały.wav'; %../bioniczna/bioniczna/data/01108.wav'
+%     fnames = '7podnoszeniebranchusradialis.wav';
+%     fnames = '7kciukwgorę.wav';
+%     fnames3 = '7szybkieRuszanienaprzemienne/kciuk.wav';
+%     fnames = '7szybkieRuszanienaprzemienne/wskazujący.wav';
+%     fnames2 = '7szybkieRuszanienaprzemienne/srodkowy.wav';
+%     fnames = '7szybkieRuszanienaprzemienne/serdeczny.wav';
+%     fnames = '7szybkieRuszanienaprzemienne/mały.wav'; %../bioniczna/bioniczna/data/01108.wav'
     [data, fs] = audioread( strcat(folder, fnames)); %data = data(:,2);
     data2 = audioread(strcat(folder, fnames));
     data3 = audioread(strcat(folder, fnames));
@@ -27,13 +27,13 @@ if(~BigData)
         S = W'*yT;    
         Y = S';
 
-    if (BSSfirst > 0)       data = [Y data]; 
-    elseif (BSSfirst < 0)   data = [data Y]; 
-    else                    data = [data]; 
+    if (BSS > 0)       data = [data Y]; 
+    elseif (BSS < 0)   data = [Y data]; 
+    else               data = [data]; 
     end   
 
-else folder = '.\data\';  fnames = folder; 
-    selectPersonNr = [108]; % 66:109 / 55
+else folder = '.\data\';  
+    selectPersonNr = [108:109]; % 66:109 / 55
     selectGestureNr = [ 2 ]; % 0 1 2 11 13
     fnames = folder+...
         "PERSON(" +min(selectPersonNr)+'do'+max(selectPersonNr)+...
@@ -93,6 +93,16 @@ for fileNo = 1:length(file)
 %     tempData = featvect(s);    
     [tempData fs]= audioread(s);
     
+    if(BSS)
+        tau = 2;
+        yT = tempData'; n =length(tempData);
+        Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
+        
+        [W,D] = eig(yT*yT',Q);    
+        S = W'*yT;    
+        tempData = S';
+    end
+
     y = tempData; % do nothing
     
 %     for i=1:size(tempData, 2) % normalizacja

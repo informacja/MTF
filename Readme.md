@@ -6,6 +6,8 @@
 ## Wprowadzenie
 
 EMG to powierzchniowe (eng. surface) badanie bioelektrycznej aktywności mięśni.
+https://docs.google.com/presentation/d/e/2PACX-1vRfEcfP52TywTPmVno2Bt6wgm4HaROeQChxWu-aj8LYmuvUH4RzDNxPejuuWYoAokfBrbt4SRoLLey4/pub?start=false&loop=false&delayms=3000
+https://coggle.it/diagram/YbIUH-TqItosZrAC/t/-/47a919cd5319f9533d671f64049f234e41e9f24484d799b7f4371e7f052dabd4
 
 https://pl.wikipedia.org/wiki/Jednostka_motoryczna
 https://nba.uth.tmc.edu/neuroscience/m/s3/chapter01.html
