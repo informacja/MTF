@@ -3,9 +3,14 @@
     ![Praca Dyplomowa](figury/pracDyplom.png) 
 ](https://docs.google.com/document/d/17OcVbgB8YPnnKoOW4hjLjBLPRd0RgDVMCvWYHTweeac/edit?usp=sharing)
 
+## toDo
+
+- [ ] N liczba osób & liczba gestów
+- [ ]
+
 ## Wprowadzenie
 
-EMG to powierzchniowe (eng. surface) badanie bioelektrycznej aktywności mięśni.
+EMG to powierzchniowe (eng. surface zwane też globalnym) badanie bioelektrycznej aktywności mięśni.
 https://docs.google.com/presentation/d/e/2PACX-1vRfEcfP52TywTPmVno2Bt6wgm4HaROeQChxWu-aj8LYmuvUH4RzDNxPejuuWYoAokfBrbt4SRoLLey4/pub?start=false&loop=false&delayms=3000
 https://coggle.it/diagram/YbIUH-TqItosZrAC/t/-/47a919cd5319f9533d671f64049f234e41e9f24484d799b7f4371e7f052dabd4
 
@@ -56,6 +61,14 @@ Podziękowanie
 >Górna granica to        96 próbek  (4 ms)
 >następnej równości nie jestem pewien, chodzi o stałą proporcję?
 >f/fd = 96/2048
+
+Filtracja dzieli się na 3 segmenty:
+- początkowy
+- centralny 
+```matlab
+n0Fzw = 0; npC = N1 + 1; %Lf+1; %=M poczatek segmentu   centralnego
+```
+- końcowy
 
 ### Design Butterworse
 ```matlab
@@ -141,12 +154,12 @@ poziomowe implementacje ruchów.
 Zdolność adaptacji. Układ ruchu musi dostosowywać się do zmieniających się okoliczności. Na przykład, gdy dziecko rośnie i zmienia się jego ciało, na układ ruchowy nakładane są różne ograniczenia w zakresie wielkości i masy kości i mięśni.
 
 
-### Kluczowe koncepce w zrozumieniu kontroli motorycznej:
+#### Kluczowe koncepce w zrozumieniu kontroli motorycznej:
 
-###### Segregacja funkcjonalna
+##### Segregacja funkcjonalna
   Układ ruchu jest podzielony na szereg różnych obszarów, które kontrolują różne aspekty ruchu (strategia „dziel i rządź”). Obszary te znajdują się w całym układzie nerwowym. Jednym z kluczowych pytań w badaniach nad kontrolą motoryczną jest zrozumienie ról funkcjonalnych odgrywanych przez każdy obszar.
 
-###### Organizacja hierarchiczna.
+##### Organizacja hierarchiczna.
    Różne obszary układu ruchu są zorganizowane w sposób hierarchiczny. Obszary wyższego rzędu mogą zajmować się bardziej globalnymi zadaniami dotyczącymi działania, takimi jak decydowanie, kiedy należy działać, opracowywanie odpowiedniej sekwencji działań i koordynowanie aktywności wielu kończyn.
 Nie muszą programować dokładnej siły i prędkości poszczególnych mięśni ani koordynować ruchów ze zmianami postawy; te zadania niskiego poziomu są wykonywane przez niższe poziomy hierarchii.
 
@@ -159,8 +172,6 @@ wyższe poziomy (takie jak kora ruchowa) mogą przetwarzać informacje związane
 Neurony ruchowe alfa (zwane również dolnymi neuronami ruchowymi) unerwiają mięsień szkieletowy i powodują skurcze mięśni, które generują ruch. Neurony ruchowe uwalniają neuroprzekaźnik acetylocholinę w synapsie zwanej złączem nerwowo-mięśniowym. Kiedy acetylocholina wiąże się z receptorami acetylocholiny na włóknie mięśniowym,
 potencjał czynnościowy jest propagowany wzdłuż włókna mięśniowego w obu kierunkach (patrz rozdział 4 sekcji I do przeglądu). Potencjał czynnościowy wyzwala skurcz mięśnia. Jeżeli końce mięśnia są nieruchome, utrzymując mięsień na tej samej długości, to skurcz skutkuje zwiększeniem siły na podporach (skurcz izometryczny).
 Jeśli mięsień skraca się bez oporu, skurcz powoduje stałą siłę (skurcz izotoniczny). Neurony ruchowe, które kontrolują ruchy kończyn i ciała, znajdują się w przednim rogu rdzenia kręgowego, a neurony ruchowe, które kontrolują ruchy głowy i twarzy, znajdują się w jądrach ruchowych pnia mózgu.
-Mimo że układ ruchowy składa się z wielu różnych typów neuronów rozsianych po całym OUN, neuron ruchowy jest jedynym sposobem, w jaki układ ruchowy może komunikować się z mięśniami. Tak więc wszystkie ruchy ostatecznie zależą od aktywności dolnych neuronów ruchowych.
-Słynny fizjolog Sir Charles Sherrington określił te neurony ruchowe jako „ostateczną wspólną ścieżkę” w przetwarzaniu motorycznym.
 
 Figure 1.3
 
@@ -185,7 +196,7 @@ Jeśli mięsień jest potrzebny tylko do wykonywania ruchów niepełnych (np. mi
 #### Kontrola siły mięśni
 Neuron ruchowy kontroluje ilość siły wywieranej przez włókna mięśniowe. Istnieją dwie zasady, które rządzą związkiem między aktywnością neuronów ruchowych a siłą mięśni: kod szybkości ( tempo odpalania) i zasada (rozmiaru) wielkości.
 
-##### 1. tempo odpalania.
+##### 1. Tempo odpalania
 Neurony ruchowe wykorzystują regulację tempa, aby zasygnalizować ilość siły, jaką ma wywierać mięsień. Wzrost szybkości potencjałów czynnościowych wystrzeliwanych przez neuron ruchowy powoduje wzrost ilości siły generowanej przez jednostkę motoryczną. Ten kod jest przedstawiony na rysunku 1.5.
 mięsień lekko drga, a następnie rozluźnia się z powrotem do stanu spoczynku. Jeśli neuron ruchowy wystrzeli po powrocie mięśnia do stanu wyjściowego, wtedy wielkość następnego skurczu mięśnia będzie taka sama jak pierwszego. Jeśli jednak tempo odpalania neuronu ruchowego wzrasta, tak, że drugi potencjał czynnościowy pojawia się zanim mięsień zrelaksuje się z powrotem do stanu wyjściowego, wtedy drugi potencjał czynnościowy wytwarza większą ilość siły niż pierwszy (tj. sumuje się siła skurczu mięśnia) Wraz ze wzrostem "szybkostrzelności" całka staje się silniejsza, aż do pewnego limitu.
 Kiedy kolejne potencjały czynnościowe nie powodują już sumowania się skurczu mięśnia (ponieważ mięsień jest w swoim maksymalnym stanie skurczu), mięsień znajduje się w stanie zwanym *tetanus*
@@ -212,3 +223,7 @@ Zatem,
 wrzeciono staje się tymczasowo niewrażliwe na rozciąganie po skurczu mięśnia. Aktywacja gamma neuronów ruchowych zapobiega tej tymczasowej niewrażliwości, powodując słaby skurcz włókien śródzębowych, równolegle ze skurczem mięśnia.
 Skurcz ten utrzymuje wrzeciono cały czas napięte i utrzymuje jego wrażliwość na zmiany długości mięśnia. Tak więc, gdy centralny system nerwowy wydaje polecenie skurczu mięśnia, nie tylko wysyła odpowiednie sygnały do ​​neuronów ruchowych alfa, ale także instruuje neurony ruchowe gamma, aby odpowiednio skurczyły włókna śródzębowe;
 ten skoordynowany proces jest określany jako koaktywacja alfa-gamma.
+
+
+
+http://www.dydaktyka.ib.pwr.wroc.pl/materialy/MDP002002L%20Fizjologia/ABC%20EMG.pdf

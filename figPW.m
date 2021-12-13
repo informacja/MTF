@@ -23,7 +23,7 @@ if(nargin<2) % jeœli jeden parametr
 % xlabel('Oœ rzeczywista'); ylabel('Oœ urojona'); 
 % legend(str{:}); 
     [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
-    print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r600'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
+    print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
     fprintf("\n\t*%s", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
     return
 end 

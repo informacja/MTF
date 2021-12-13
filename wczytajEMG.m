@@ -4,20 +4,26 @@ if(~BigData)
     fnames = 'dane/50Hz.wav';
     fnames = 'spoczynek.wav';
     fnames = 'zginanie.wav';
-    fnames = 'dane/zginanie2.wav';    
-    fnames = 'zaciśnięta_pięść_statycznie.wav';
-    fnames = 'zaciśnięta_pięść_dynamicznie.wav'; %'../bioniczna/bioniczna/data/01108.wav'
+    fnames2 = 'zginanie2.wav';    
+%     fnames = 'zaciśnięta_pięść_statycznie.wav';
+%     fnames = 'zaciśnięta_pięść_dynamicznie.wav'; %'../bioniczna/bioniczna/data/01108.wav'
 
-    fnames = '7sZginanie.wav';
 %     fnames = '7podnoszeniebranchusradialis.wav';
 %     fnames = '7kciukwgorę.wav';
 %     fnames3 = '7szybkieRuszanienaprzemienne/kciuk.wav';
 %     fnames = '7szybkieRuszanienaprzemienne/wskazujący.wav';
 %     fnames2 = '7szybkieRuszanienaprzemienne/srodkowy.wav';
-%     fnames = '7szybkieRuszanienaprzemienne/serdeczny.wav';
+    fnames = '7szybkieRuszanienaprzemienne/serdeczny.wav';
 %     fnames = '7szybkieRuszanienaprzemienne/mały.wav'; %../bioniczna/bioniczna/data/01108.wav'
+%     fnames = 'serdecznyzgiecieiwyprost.wav';
+%     fnames = 'serdecznyzgiecieiwyprost2.wav';
+%     fnames = 'edward\zginanie.wav';    
+%     fnames2 = 'krystynka\zginanie1.wav';
+    fnames = '7szginanie2.wav';
+    fnames = '7sZginanie.wav';  
+
     [data, fs] = audioread( strcat(folder, fnames)); %data = data(:,2);
-    data2 = audioread(strcat(folder, fnames));
+    data2 = audioread(strcat(folder, fnames2));
     data3 = audioread(strcat(folder, fnames));
         tau = 2;
         yT = data'; n =length(data);
@@ -25,11 +31,18 @@ if(~BigData)
         
         [W,D] = eig(yT*yT',Q);    
         S = W'*yT;    
-        Y = S';
+       Y = S';
+
+        yT = data2'; n =length(data2);
+        Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
+        
+        [W,D] = eig(yT*yT',Q);    
+        S = W'*yT;    
+       X = S';
 
     if (BSS > 0)       data = [data Y]; 
     elseif (BSS < 0)   data = [Y data]; 
-    else               data = [data]; 
+    else               data = [data];  % default 0
     end   
 
 else folder = '.\data\';  

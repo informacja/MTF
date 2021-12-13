@@ -28,10 +28,27 @@
         Y=Yoryg'; Ll=1; N=length(Y);
         Nakt=N; nY1=1; nYf=N;
         NfC=Nakt-N2; NfCd=NfC; % koniec segmentu centralnego
-        Tu=Tud; ntypZ=typMTF(1);
+        Tu=Tud; 
+        % ============ Synteza filtrów dolnoprzepustowych MTFd i Butter5 ===================
+        %  Wywołanie desMTFcButter() z parametrem figF=0 daje wynik bez wykresow charakterystyk Bodego 
+        figF=111; % numer rysunku z wykresami Bodego 
+        ntypZ=typMTF(1); rzadB=5;
+        if(~isempty(MTFd(ntypZ,1).M)& MTFd(ntypZ,1).Tu~=Tu) MTFd(ntypZ,1).M=[]; end
+        if(isempty(MTFd(ntypZ,1).M))
+            if(0) % Liczenie z rysowaniem wszystkich charakterystyk
+                [bfB, afB, tauhPf, MTFd, Fzwc, Ffc, LpFc, Amp, fi,  nA01, WcB, Fzwd, Fzwd2 Ff1 Ff2]=...
+                    desMTFcButter(ntypZ,[Tud Tud1],rzadB,lT,figF,'Synteza filtrow MTF (Fzws_b Ffc_r Fzwd_m Fzw2_g Ff1_c Ff2_{c--}) i Butter_k','kbrmgc');
+            else % Tylko synteza filtrow Fzwc i Butter (szybka wersja)
+                [bfB, afB, tauhPf, MTFd, Fzwc, Ffc, LpFc, Amp, fi,  nA01, WcB, Fzwd, Fzwd2]=desMTFcButter(ntypZ,[Tud Tud1],rzadB,lT); 
+            end
+            AmpB=Amp(1,:);
+            Lzwc=LpFc(2); Lzwd=LpFc(4); Lzw2=LpFc(5); % długości filtrów Fzwc, Fzwd i Fzw2
+            tauhP=-tauhPf(1); ihPB=-tauhPf(1); ihP=-tauhPf(2); iA01=nA01(2); wPol=2*ihP/lT;
+        end
+        % ............. Koniec syntezy filtrów dolnoprzepustowych MTFd i Butter5 ............  
         for(nrf=1:LFd)
-            if(~isempty(MTFd(ntypZ,nrf).M)& MTFd(ntypZ,nrf).Tu~=Tu) MTFd(ntypZ,nrf).M=[]; end
-            if(isempty(MTFd(ntypZ,nrf).M))
+            %if(~isempty(MTFd(ntypZ,nrf).M)& MTFd(ntypZ,nrf).Tu~=Tu) MTFd(ntypZ,nrf).M=[]; end
+            if(0) %isempty(MTFd(ntypZ,nrf).M))
                 [M, F0, Fzw, Ff, Ffshf,ktory]=MTFdesign(ntypZ, Tu);
                 [lf,N1]=size(F0); [lf,N2]=size(Ff); N1f=N1+1; nh1=M/Tu;
                 MTFd(ntypZ,nrf).Tu=Tu;MTFd(ntypZ,nrf).M=M; MTFd(ntypZ,nrf).F0=F0; MTFd(ntypZ,nrf).Fzw=Fzw;
@@ -66,6 +83,7 @@
             else
                 M=MTFd(ntypZ,nrf).M; F0=MTFd(ntypZ,nrf).F0; Fzw=MTFd(ntypZ,nrf).Fzw; Ff=MTFd(ntypZ,nrf).Ff; Ffshf=MTFd(ntypZ,nrf).Ffshf;
                 [lf,N1]=size(F0); [lf,N2]=size(Ff); N1f=N1+1; nh1=M/Tu;
+                if(nrf==1) MTud=M; else MTud2=M; end
                 %ktory=MTFd(ntypZ,nrf).ktory; nh1=MTFd(ntypZ,nrf).nh1; N1=MTFd(ntypZ,nrf).N1; N2=MTFd(ntypZ,nrf).N2; lf=MTFd(ntypZ,nrf).lf;
             end
             fprintf(1,'\nCzas syntezy =%.2f s',toc); tic;
