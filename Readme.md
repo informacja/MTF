@@ -227,3 +227,4 @@ ten skoordynowany proces jest określany jako koaktywacja alfa-gamma.
 
 
 http://www.dydaktyka.ib.pwr.wroc.pl/materialy/MDP002002L%20Fizjologia/ABC%20EMG.pdf
+

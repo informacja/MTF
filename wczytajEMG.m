@@ -1,55 +1,71 @@
 % wczytajEMG
+data = [];
 if(~BigData) 
-    folder = './dane/';  
-    fnames = 'dane/50Hz.wav';
-    fnames = 'spoczynek.wav';
-    fnames = 'zginanie.wav';
-    fnames2 = 'zginanie2.wav';    
-%     fnames = 'zaciśnięta_pięść_statycznie.wav';
-%     fnames = 'zaciśnięta_pięść_dynamicznie.wav'; %'../bioniczna/bioniczna/data/01108.wav'
+    folder = "./dane/"; fnames = [];
+%     fnames =  [fnames "50Hz.wav"];
+%     fnames =  [fnames "spoczynek.wav"];
 
-%     fnames = '7podnoszeniebranchusradialis.wav';
-%     fnames = '7kciukwgorę.wav';
-%     fnames3 = '7szybkieRuszanienaprzemienne/kciuk.wav';
-%     fnames = '7szybkieRuszanienaprzemienne/wskazujący.wav';
-%     fnames2 = '7szybkieRuszanienaprzemienne/srodkowy.wav';
-    fnames = '7szybkieRuszanienaprzemienne/serdeczny.wav';
-%     fnames = '7szybkieRuszanienaprzemienne/mały.wav'; %../bioniczna/bioniczna/data/01108.wav'
-%     fnames = 'serdecznyzgiecieiwyprost.wav';
-%     fnames = 'serdecznyzgiecieiwyprost2.wav';
-%     fnames = 'edward\zginanie.wav';    
-%     fnames2 = 'krystynka\zginanie1.wav';
-    fnames = '7szginanie2.wav';
-    fnames = '7sZginanie.wav';  
+%     fnames =  [fnames"zginanie.wav"];
+%     fnames = [fnames "zginanie2.wav"];    
+%     fnames = [fnames "zaciśnięta_pięść_statycznie.wav"];
+%     fnames = [fnames "zaciśnięta_pięść_dynamicznie.wav"]; %"../bioniczna/bioniczna/data/01108.wav"
 
-    [data, fs] = audioread( strcat(folder, fnames)); %data = data(:,2);
-    data2 = audioread(strcat(folder, fnames2));
-    data3 = audioread(strcat(folder, fnames));
+%     fnames = [fnames "7podnoszeniebranchusradialis.wav"];
+%     fnames = [fnames "7kciukwgorę.wav"];
+%     fnames = [fnames "7szybkieRuszanienaprzemienne/kciuk.wav"];
+%     fnames = [fnames "7szybkieRuszanienaprzemienne/wskazujący.wav"];
+%     fnames = [fnames "7szybkieRuszanienaprzemienne/srodkowy.wav"];
+%     fnames = [fnames "7szybkieRuszanienaprzemienne/serdeczny.wav"];
+%     fnames = [fnames "7szybkieRuszanienaprzemienne/mały.wav"]; %../bioniczna/bioniczna/data/01108.wav"
+%     fnames = [fnames "serdecznyzgiecieiwyprost.wav"];
+%     fnames = [fnames "serdecznyzgiecieiwyprost2.wav"];
+%     fnames = [fnames "7szginanie2.wav"]; % zawiera pik
+%     fnames = [fnames "edward\zginanie.wav"];    
+
+    fnames = [fnames "krystynka\zginanie.wav"];
+    fnames = [fnames "krystynka\zginanie1.wav"];
+    fnames = [fnames "krystynka\zginanie2.wav"];
+    fnames = [fnames "krystynka\zginanie3.wav"];
+    fnames = [fnames "krystynka\zginanie4.wav"];
+  
+%     fnames2 = [fnames "7sZginanie.wav";  
+    for (i = 1:length(fnames))
+        data = [data audioread(strcat(folder, fnames(i)))];
+    end
+
+%     [data, fs] = audioread( strcat(folder, fnames)); %data = data(:,2);
+%     data2 = audioread(strcat(folder, fnames2));
+%     data3 = audioread(strcat(folder, fnames3));
+%     data4 = audioread(strcat(folder, fnames4));
+%     data5 = audioread(strcat(folder, fnames5));
+    ch = 8; Y = [];
+    for (i = 1:length(data(1,:))/ch)
         tau = 2;
-        yT = data'; n =length(data);
+        yT = data(:,((i-1)*8+1):ch*i)'; n = length(data);
         Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
         
         [W,D] = eig(yT*yT',Q);    
         S = W'*yT;    
-       Y = S';
+        Y = [ Y S'];
+    end
+% 
+%         yT = data2'; n =length(data2);
+%         Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
+%         
+%         [W,D] = eig(yT*yT',Q);    
+%         S = W'*yT;    
+%        X = S';
 
-        yT = data2'; n =length(data2);
-        Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
-        
-        [W,D] = eig(yT*yT',Q);    
-        S = W'*yT;    
-       X = S';
-
-    if (BSS > 0)       data = [data Y]; 
+    if (BSS > 0)       data = [Y]; 
     elseif (BSS < 0)   data = [Y data]; 
     else               data = [data];  % default 0
     end   
 
-else folder = '.\data\';  
+else folder = ".\data\";  
     selectPersonNr = [108:109]; % 66:109 / 55
     selectGestureNr = [ 2 ]; % 0 1 2 11 13
     fnames = folder+...
-        "PERSON(" +min(selectPersonNr)+'do'+max(selectPersonNr)+...
+        "PERSON(" +min(selectPersonNr)+"do"+max(selectPersonNr)+...
         ") GESTURE"+mat2str(selectGestureNr);
 % Gestures numeration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,7 +92,7 @@ else folder = '.\data\';
 
 
 
-dataSource = fullfile(folder, '*.wav'); 
+dataSource = fullfile(folder, "*.wav"); 
 file = dir(dataSource);
 
 data = [];      % featVectBion matrix 
@@ -100,7 +116,7 @@ for fileNo = 1:length(file)
     end % Big
     
 %     labelsVector = [labelsVector; tempGestureNumber];
-    s = strcat(file(fileNo).folder,'\');
+    s = strcat(file(fileNo).folder,"\");
     s = strcat(s,file(fileNo).name);
     
 %     tempData = featvect(s);    
@@ -129,8 +145,8 @@ for fileNo = 1:length(file)
 %         y(:,i)=(tempData(:,i)-yMean(i))/ySigma(i);
 %     end 
     nfig=tempPersonNumber+1; ch = 1;
-    figure(nfig); plot(y(:,ch)); hold on; title(strcat(file(fileNo).name, ' Kanał(:,',int2str(ch),')'));
-    figpos = {'north','south','east','west','northeast','northwest','southeast','southwest','center','onscreen'};
+    figure(nfig); plot(y(:,ch)); hold on; title(strcat(file(fileNo).name, " Kanał(:,",int2str(ch),")"));
+    figpos = {"north","south","east","west","northeast","northwest","southeast","southwest","center","onscreen"};
     movegui(cell2mat( figpos(mod(nfig,length(figpos)-1)+1) ));
 %     figure(2*tempGestureNumber+3), plot(audioread(s)); hold on;title(file(fileNo).name);
 %     legend; figure(tempPersonNumber);plot(audioread(s));

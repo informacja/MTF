@@ -1,7 +1,7 @@
 % widmo mocy, porownywane rendow% suma kwadratow roznic
 clear all;  tStart = tic;
 Takcji = 5000; %5*392;
-Symul = 0; wgEnerg = 1; Integr = 1; BigData = 0; BSS = 0;  % sourse of data (from DB or one file
+Symul = 0; wgEnerg = 2; Integr = 1; BigData = 0; BSS = 0;  % sourse of data (from DB or one file
 % Integr=0 sygnał pomiarowy bez zsumowania (orygin.); Integr=1 sygnał pomiarowy zsumowany;
 % wgEnerg=0 synal przetw. wg Integr jest filtrowany i liczony tylko raz;
 % wgEnerg>0 synal przetw. wg Integr jest filtrowany, a potem liczymy Y^2 (liczony dwa razy)
@@ -40,7 +40,7 @@ typMTF = [5 5 5 3]; % typ filtru: 3 - Z1 - filtr koncowy zwykly; 5 - z3 - trend 
 typFf = 1; % - typ filtru konc.: 0 nowy, 1 zwykly
 % =============== Parametry szergu i filtra ==============
 LSzeregow = length(nrwykr); % liczba badanych szeregĂłw
-Lk = 0; Lgestow=round(LSzeregow/2*2); Losob=1; %Losob = size(SZEREGI,2)/8; Lgestow = LSzeregow/8;  %LC = LSzeregow;Lgestow = round(LC / 2); Losob = 2;
+Lk = 0; Losob=Lszer/8; Lgestow=round(LSzeregow/Losob);  %Losob = size(SZEREGI,2)/8; Lgestow = LSzeregow/8;  %LC = LSzeregow;Lgestow = round(LC / 2); Losob = 2;
 nfig = nfig0; nFig = nfig0 + 1 + Lgestow;
 % ========================================================
 %ntypZ=typMTF(nrVar);  % ===== Typ filtru ============= 2 klasyczny, 3 trend lin.; 5 trend 3.rzÄ™du
@@ -53,17 +53,19 @@ fprintf(1, '%s: ', druktx); fprintf(1, '\nTu_d=%d Tu_g=%d %d Nmax=%d', round(Tud
 if (wgEnerg > 0) LwgE = 1; lcol = 4; else LwgE = 0; lcol = 2; end
 Kolor = 'kbrmgc'; figX = 0.00; figY = -0.00; Xkonc = 0.80; Ykonc = 0.8; trendTab = [];
 
-Nwin = 512; kaiser(128,18);
-fpr = 2048;
-Nfft = fpr/2;
-k    = 16;
-for( person = 1:size(SZEREGI,2)/8 )
-    f=figure(19+person); 
-    for (ch = 1:8)
-        subplot(4,2,ch); spectrogram(SZEREGI(:,ch*person), kaiser(Nwin,k), Nwin - k, Nfft, fpr, 'yaxis');
+if(0)
+    Nwin = 512; kaiser(128,18);
+    fpr = 2048;
+    Nfft = fpr/2;
+    k    = 16;
+    for( person = 1:size(SZEREGI,2)/8 )
+        f=figure(19+person); 
+        for (ch = 1:8)
+            subplot(4,2,ch); spectrogram(SZEREGI(:,ch*person), kaiser(Nwin,k), Nwin - k, Nfft, fpr, 'yaxis');
+        end
+        set(f,'WindowState','maximized'); sgtitle(fnames(person));
+        figPW('kaiser',person,'png','figury/win/');
     end
-    set(f,'WindowState','maximized'); if(person==1) sgtitle(fnames); else sgtitle(fnames2); end
-    figPW('kaiser',person,'png','figury/win/');
 end
 
 for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
@@ -89,7 +91,7 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
         nrPliku = 1; nrKol = nrs;
         if (exist('nazwy')) nplik = nazwy(nrS, :); else nplik = sprintf('Series%d', nrS); end
         %hf=figure(nfig); set(hf, 'Position',[388 122 1273 804]); %[163 153 1273 804]);%[184 39 1682 1071]); %[184 106 1584 1004]); %[184 63 1112 1047]);
-        txg = sprintf('SZEREG(1:%d,%d) z pliku %s', Ldsz, nrS, fnames);
+        txg = sprintf('SZEREG(1:%d,%d) z pliku %s', Ldsz, nrS, fnames(nosoby));
 
         for (wgEn = 0:LwgE)
             nCol = 8 * (wgEn) + nrs;
@@ -111,13 +113,12 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
                     if (wgEnerg > 1) y0 = Yoryg(1); for(n = 1:Ldsz) Yoryg(n) = y0 * alfa + Yoryg(n); y0 = Yoryg(n); end, end
                     Yoryg = Yoryg.^2;
                     tx = sprintf('Sygnal ENERGII Y=Sygn^2'); txspac = '';
-            end
-
+                end
             end
 
               % ----------- Określenie zakresu lT analizy widm (tak aby dobrze spróbkować widmo) 
             lTx=Tud*200; lTx=Tud*500; %1000;
-            nTx=ceil(lTx/4096); lT=nTx*4096%*4096; %500; %350; %75; %round(lA/10);
+            nTx=ceil(lTx/4096); lT=nTx*1024%*4096; %500; %350; %75; %round(lA/10);
             % ----------------------------------------------------------------------------------  
             
             filtracja
@@ -168,17 +169,14 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
                     xlabel(sprintf('Kanal %d: yTr(%d:%d)', nrwykr(nrs), nY1Tr, nYfTr));
                     if (nF == 1 && nrs == 2) title([tx '  ' txg]); end
                 end
-
                 hold off;
 
                 if (nF == 1)
                     if (nosoby ~= nOs1) break; end
                     figure(nfig); subplot(4, lcol, 2 * lcol + ncol);
                     sygnTr = yTr; sygnTrf = yTrf;
-                    %else if(nosoby~=nOs1) break; end 
-                    trendTab = [ trendTab; [sygnTrf(1:nY1 - npC) sygnTr sygnTrf(nYf + N2 + 1:Nf)]];
+                    %else if(nosoby~=nOs1) break; end                    
                 end
-
             end
 
             sygnTrf = [];
@@ -504,33 +502,28 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
             end
 
             fprintf(1, '\nCzas obliczeń: %.2f', toc);
-        end % wersja Y^2 Y
-
+            trendTab = [ trendTab sygnTr ];
+        end % wersja Y^2 Y        
         nowy = 0;
-    end %Losob
-
+    end %Losob   
 end %Lgestow
 
-%% skala trendendów
-trendTab;
-figure(14); sgtitle(fnames);
-% xX = max(max(trendTab));
-% xN = min(min(trendTab));
-nieparzyste =  1:2:length(trendTab(:,1))-1;
-parzyste = 2:2:length(trendTab(:,1));
-xIn = min(min(trendTab(nieparzyste,:))); xAn = max(max(trendTab(nieparzyste,:)));
-xIp = min(min(trendTab(parzyste,:))); xAp = max(max(trendTab(parzyste,:)));
-for( i = nieparzyste ) 
-    myPlot(i, length(SZEREGI(:,1)), xIn, xAn ,trendTab)    ;
-    if(i==1 || i==3) title('Skumulowany');
+figure(14); %% skala trendendów
+
+nieparzyste =  1:2:length(trendTab(1,:))-1;
+parzyste = 2:2:length(trendTab(1,:));
+xIn = min(min(trendTab(:,nieparzyste))); xAn = max(max(trendTab(:,nieparzyste))); % works
+xIp = min(min(trendTab(:,parzyste))); xAp = max(max(trendTab(:,parzyste)));
+
+hold off;
+for( i = nieparzyste ) ;
+    plotTrend(i, Ldsz, xIn, xAn, trendTab); if(i==1) title('Skumulowany'); end; if (i == 3) sgtitle(append(fnames));end
 end
 
-for( i = parzyste ) 
-    myPlot(i, length(SZEREGI(:,1)), xIp, xAp,trendTab)    ;
-    if(i==2 || i==4) title('Moc');
-end 
-
-
+hold off;
+for( i = parzyste ); 
+    plotTrend(i, Ldsz, xIp, xAp, trendTab); if(i==2) title('Moc'); end
+end
 %% ================= Sprawdzenie filtracji Fzwdc: yTrc wg Fzwdc, yTr - metodą dwuetapową Fzwd i Fzw2 ============
 m = 1; yTrc = []; for(n = Lzwc:Nf) yTrc(m) = Yoryg(n - Lzwc + 1:n)' * Fzwc; m = m + 1; end
 figure(1); subplot(1, 1, 1); plot(nY1Tr:nYfTr, yTrc, 'r', nY1Tr:nYfTr, yTr, 'k'); axis('tight');
@@ -541,20 +534,11 @@ c=1; %% ========================================================================
 % sgtitle(sprintf('Trendy ')); %z Blind Source Separation /nCzerwony zaporowy/n szerokoprzepustowy/n poprawka
 fprintf('\nCzas wykonywania obliczeń i rysowania: %gs', toc(tStart));
 
-[path, filename, Fext] = fileparts(fnames);
+[path, filename, Fext] = fileparts(fnames(1));
 figLetter = char(65+2^0*BSS+2^1*wgEnerg+2^2*Integr+2^3*BigData+2^4*Symul); char(65+figLetter); % figure countig num
-figure(nFig); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS));
-figure(11); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS), 11, 'fig', 'figury/', 2);
+nFig = 11; set(figure(nFig),'WindowState','maximized');pause(.1); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS));
+nFig = 14; set(figure(nFig),'WindowState','maximized');pause(.1); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS), nFig, 'fig', 'figury/', 2);
 
-function myPlot( i, L, xN, xX,trendTab)
-    if( i > 16 )
-         figure(15); sgtitle(fnames2);
-         i = i - 16;
-    end
-  subplot(4, 4, i);
-    plot(trendTab(i,1:L)); axis('tight'); ax = axis;
-    axis([ax(1:2) xN xX])
-end
 % zapiszFig('3');
 % Test widma: Tw.Parsevala - energia sygnaĹ‚u=Ĺ›rednia(widma mocy):
 % sum(x(0:N-1).^2)=N*mean(x)^2+N/2*sum(Apm^2(i=1:N/2))=mean(Af^2(1:N))=2*mean((Amp*N/2)^2(1:N/2)); Amp=Af*2/N
