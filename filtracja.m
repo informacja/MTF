@@ -6,7 +6,7 @@
         if(~exist('MTFd','var'))
             MTFd(11,1).M=[]; if(LFd==2) MTFd(11,2).M=[]; end,
         end  % Filtr jest projektowany tylko raz - dla kolejnych szeregĂłw bierzemy ten sam
-        fprintf(1,'\nSzereg %d: Czas startu =%.2f s',nrS,toc); tic;
+        fprintf(1,'\nSzereg %d: Czas startu =%.2f s',nrS,toc); tic; szerIndex = [szerIndex nrS];
         F0=[]; Fzw=[]; Ff=[]; Ffshf=[];
         for(nfg=1:LFg+1)
             Tu=TuG(nfg); ntypZ=typMTF(nfg+1);
@@ -39,7 +39,14 @@
                 [bfB, afB, tauhPf, MTFd, Fzwc, Ffc, LpFc, Amp, fi,  nA01, WcB, Fzwd, Fzwd2 Ff1 Ff2]=...
                     desMTFcButter(ntypZ,[Tud Tud1],rzadB,lT,figF,'Synteza filtrow MTF (Fzws_b Ffc_r Fzwd_m Fzw2_g Ff1_c Ff2_{c--}) i Butter_k','kbrmgc');
             else % Tylko synteza filtrow Fzwc i Butter (szybka wersja)
-                [bfB, afB, tauhPf, MTFd, Fzwc, Ffc, LpFc, Amp, fi,  nA01, WcB, Fzwd, Fzwd2]=desMTFcButter(ntypZ,[Tud Tud1],rzadB,lT); 
+                fname=sprintf('MTFd%d_%d_%d.mat',ntypZ,round(Tu), rzadB);
+                fp=fopen(fname,'r');
+                if(fp>1) fclose(fp);
+                    load(fname);
+                else
+                    [bfB, afB, tauhPf, MTFd, Fzwc, Ffc, LpFc, Amp, fi,  nA01, WcB, Fzwd, Fzwd2]=desMTFcButter(ntypZ,[Tud Tud1],rzadB,lT); 
+                    save(fname,'bfB', 'afB', 'tauhPf', 'MTFd', 'Fzwc', 'Ffc', 'LpFc', 'Amp', 'fi',  'nA01', 'WcB', 'Fzwd', 'Fzwd2');
+                end
             end
             AmpB=Amp(1,:);
             Lzwc=LpFc(2); Lzwd=LpFc(4); Lzw2=LpFc(5); % długości filtrów Fzwc, Fzwd i Fzw2

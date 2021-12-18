@@ -5,8 +5,8 @@
 
 ## toDo
 
-- [ ] N liczba osób & liczba gestów
-- [ ]
+- [ ] N liczba osób & liczba gestów 
+- [ ] Zsumowany(zintegorowany) a skumoulowany?
 
 ## Wprowadzenie
 
@@ -19,12 +19,12 @@ https://nba.uth.tmc.edu/neuroscience/m/s3/chapter01.html
 
 ### Materiały i metody
 
-Eksperyment przeprowadzono z udziałem 109 osób. Do zapisu wykożystano format WAVE. Pojedynczy plik zawiera 8 kanałów nieskompresowanego sygnału EMG z próbkowanego 2048 razy na sekundę.
+Eksperyment przeprowadzono z udziałem 109 osób. Do zapisu wykorzystano format WAVE. Pojedynczy plik zawiera 8 kanałów nieskompresowanego sygnału EMG z próbkowanego 2048 razy na sekundę.
 Do pomiaru przygotowano instukcję z animacją gestów. https://github.com/informacja/EMG/tree/master/matlab/instrukcja#readme
-Proponowany przebieg nagrywania w 7-mio sekundowym oknie 5 sekund aktywności i 1-no sekundowe marginesy bezczynności (ze względu na sekcje początkową i kńcową filtra MTF).
+Proponowany przebieg nagrywania w 7-mio sekundowym oknie 5 sekund aktywności i 1-no sekundowe marginesy relaksacji (ze względu na sekcje początkową i końcową filtra MTF).
 Badany sygnał ma częstotliwość próbkowania 2048 na sekundę.
 
-Konfiguracja aplikacji EMGAnalyzer transferującej sygnał użyteczny.
+Konfiguracja aplikacji EMG Analyzer transferującej sygnał użyteczny.
 ```cpp
 #define DSIZE    4096
 #define NCH 8
@@ -34,7 +34,7 @@ Konfiguracja aplikacji EMGAnalyzer transferującej sygnał użyteczny.
 
 #define VSIZE (DSIZE2/NCH)      // Vector
 #define SECONDS 7               // of recording
-#define FRCNT NCH*SECONDS       // 8 chanels, 5 seconds
+#define FRCNT NCH*SECONDS       // 8 channels, 5 seconds
 
 #define FFT_SIZE VSIZE*FRCNT
 ```

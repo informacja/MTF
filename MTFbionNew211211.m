@@ -1,5 +1,5 @@
 % widmo mocy, porownywane rendow% suma kwadratow roznic
-clear all;  tStart = tic;
+clear all;  tStart = tic; global ax1 ax2 szerIndex;
 Takcji = 5000; %5*392;
 Symul = 0; wgEnerg = 2; Integr = 1; BigData = 0; BSS = 0;  % sourse of data (from DB or one file
 % Integr=0 sygnał pomiarowy bez zsumowania (orygin.); Integr=1 sygnał pomiarowy zsumowany;
@@ -117,8 +117,8 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
             end
 
               % ----------- Określenie zakresu lT analizy widm (tak aby dobrze spróbkować widmo) 
-            lTx=Tud*200; lTx=Tud*500; %1000;
-            nTx=ceil(lTx/4096); lT=nTx*1024%*4096; %500; %350; %75; %round(lA/10);
+            lTx=Tud*200; %lTx=Tud*500; %1000;
+            nTx=ceil(lTx/1024); lT=nTx*1024;%*4096; %500; %350; %75; %round(lA/10);
             % ----------------------------------------------------------------------------------  
             
             filtracja
@@ -471,7 +471,7 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
             % Af(m) wygładzone widmo Ayf - wygladzone widmo mocy obliczonej Ayf (z zachowaniem mocy lacznej, ale z niewielkÄ… odchyĹ‚kÄ… Ĺ›redniÄ…);;
             % Af2 wygładzone widmo Ayf^2; nie uzywane
             % AYor obliczone widmo sygnału Yoryg(nY1:nYf); (tylko do obliczeń)
-            % AYo(k) widmo skl.srenioczęst.: wygładzone widmo AYor pomnożone przez filtr pasmowy Afc,
+            % AYo(k) widmo skl.srenioczęst.: wygładzone widmo AYonr pomożone przez filtr pasmowy Afc,
             % AfTr(g) inaczej policz. widmo ATr: ATr*Afc
             % AYTr(b) widmo całego sygn.użyt. AYo+Afc*AYoTr (inaczej oblicz. widmo AYo;
             if (nosoby == nOs1)
@@ -506,24 +506,21 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
         end % wersja Y^2 Y        
         nowy = 0;
     end %Losob   
-end %Lgestow
+end %Lgestow 
 
 figure(14); %% skala trendendów
 
-nieparzyste =  1:2:length(trendTab(1,:))-1;
-parzyste = 2:2:length(trendTab(1,:));
-xIn = min(min(trendTab(:,nieparzyste))); xAn = max(max(trendTab(:,nieparzyste))); % works
-xIp = min(min(trendTab(:,parzyste))); xAp = max(max(trendTab(:,parzyste)));
-
-hold off;
-for( i = nieparzyste ) ;
-    plotTrend(i, Ldsz, xIn, xAn, trendTab); if(i==1) title('Skumulowany'); end; if (i == 3) sgtitle(append(fnames));end
-end
-
-hold off;
-for( i = parzyste ); 
-    plotTrend(i, Ldsz, xIp, xAp, trendTab); if(i==2) title('Moc'); end
-end
+plotTrendStaticAxis(Lszer, Ldsz, trendTab); 
+ 
+%  hold off;
+% for( i = nieparzyste ) ;
+%     plotTrend(i, Ldsz, Lszer, xIn, xAn, trendTab); if(i==1) title('Skumulowany'); end; if (i == 3) sgtitle(append(fnames));end
+% end 
+% 
+% hold off;
+% for( i = parzyste ); 
+%     plotTrend(i, Ldsz, Lszer, xIp, xAp, trendTab); if(i==2) title('Moc'); end
+% end
 %% ================= Sprawdzenie filtracji Fzwdc: yTrc wg Fzwdc, yTr - metodą dwuetapową Fzwd i Fzw2 ============
 m = 1; yTrc = []; for(n = Lzwc:Nf) yTrc(m) = Yoryg(n - Lzwc + 1:n)' * Fzwc; m = m + 1; end
 figure(1); subplot(1, 1, 1); plot(nY1Tr:nYfTr, yTrc, 'r', nY1Tr:nYfTr, yTr, 'k'); axis('tight');

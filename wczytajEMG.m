@@ -2,13 +2,13 @@
 data = [];
 if(~BigData) 
     folder = "./dane/"; fnames = [];
-%     fnames =  [fnames "50Hz.wav"];
-%     fnames =  [fnames "spoczynek.wav"];
+    fnames =  [fnames "50Hz.wav"];
+    fnames =  [fnames "spoczynek.wav"];
 
-%     fnames =  [fnames"zginanie.wav"];
+%     fnames =  [fnames "zginanie.wav"];
 %     fnames = [fnames "zginanie2.wav"];    
 %     fnames = [fnames "zaciśnięta_pięść_statycznie.wav"];
-%     fnames = [fnames "zaciśnięta_pięść_dynamicznie.wav"]; %"../bioniczna/bioniczna/data/01108.wav"
+    fnames = [fnames "zaciśnięta_pięść_dynamicznie.wav"]; %"../bioniczna/bioniczna/data/01108.wav"
 
 %     fnames = [fnames "7podnoszeniebranchusradialis.wav"];
 %     fnames = [fnames "7kciukwgorę.wav"];
@@ -22,11 +22,14 @@ if(~BigData)
 %     fnames = [fnames "7szginanie2.wav"]; % zawiera pik
 %     fnames = [fnames "edward\zginanie.wav"];    
 
-    fnames = [fnames "krystynka\zginanie.wav"];
-    fnames = [fnames "krystynka\zginanie1.wav"];
-    fnames = [fnames "krystynka\zginanie2.wav"];
-    fnames = [fnames "krystynka\zginanie3.wav"];
-    fnames = [fnames "krystynka\zginanie4.wav"];
+%     fnames = [fnames "krystynka/zginanie.wav"];
+%     fnames = [fnames "krystynka/zginanie1.wav"];
+%     fnames = [fnames "krystynka/zginanie2.wav"];
+%     fnames = [fnames "krystynka/zginanie3.wav"];
+%     fnames = [fnames "krystynka/zginanie4.wav"];
+%     fnames = [fnames "tomasz/zginanie.wav"];
+%     fnames = [fnames "tomasz/serdeczny.wav"];
+%     fnames = [fnames "tomasz/thub.wav"];
   
 %     fnames2 = [fnames "7sZginanie.wav";  
     for (i = 1:length(fnames))
