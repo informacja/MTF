@@ -74,6 +74,7 @@ ntypZ=typMTF(1); rzadB=5;
 Ffzwykly=1; % =1 filtr koncowy bez modyfikacji, =0 filtr koncowy skompresowany i dopeln.Regresja
 tic;
 if(0) % Liczenie z rysowaniem wszystkich charakterystyk
+    figF=22
     [bfBd, afBd, tauhPfd, MTFd, Fzwc, LpFc, Amp, nA01, WcB, Fzwd, Fzwd2, fi,  Ffc, Ff1, Ff2]=...
         desMTFcButter(ntypZ,[Tud Tud1],rzadB,lT,figF,'Synteza filtrow MTF (Fzws_b Fzwd_r Fzw2_m Ffc_g Ff1_c Ff2_{c--}) i Butter_k','kbrmgc');
 else % Tylko synteza filtrow Fzwc i Butter (szybka wersja)
@@ -84,7 +85,7 @@ end
 ihP(1)=WcB*lT/2; 
 if(length(nA01)>1)  iA01(1)=nA01(2); AmpB(1,:)=Amp(1,:);  Ampd(1,:)=Amp(2,:); end; 
 % -------------- Synteza filtrów dla energii ----------------
-if(0) % Liczenie z rysowaniem wszystkich charakterystyk
+if(1) % Liczenie z rysowaniem wszystkich charakterystyk
     figF=2;
     [bfBE, afBE, tauhPfE, MTFE, FzwcE, LpFcE, Amp, nA01E, WcB, FzwdE, Fzwd2E, fi,  Ffc, Ff1, Ff2]=...
         desMTFcButter(ntypZ,[Tud Tud1]/Ewykl,rzadB,lT,figF,'Synteza filtrow MTF (Fzws_b Fzwd_r Fzw2_m Ffc_g Ff1_c Ff2_{c--}) i Butter_k','kbrmgc');
@@ -139,7 +140,7 @@ fprintf(1,'%s: ',druktx); fprintf(1,'\nTu_d=%d Tu_g=%d %d Nmax=%d',round(Tud),ro
 if(wgEnerg>0) LwgE=1; lcol=4; else LwgE=0; lcol=2; end 
 Kolor='kbrmgc'; figX = 0.00; figY = -0.00; Xkonc = 0.80; Ykonc = 0.8;
 for(nrs=1:Lgestow)  %2:2) % Petla po szeregach
-    nowy=1; tKanal=tic;
+    nowy=1; 
     nfig=nfig+1;
     if(0)
         figpos = {'north','south','east','west','northeast','northwest','southeast','southwest','center','onscreen'};
@@ -460,10 +461,10 @@ for(nrs=1:Lgestow)  %2:2) % Petla po szeregach
                 end
                 ylabel('Amplituda'); xlabel('Widmo amplit.trendu ATr(f/f_g)');
             end
-         end  % wersja Y^2 Y
+            fprintf(1,'\nSzereg %d. Czas obliczeñ: %.2f',nrs,toc);
+        end  % wersja Y^2 Y
         nowy=0; 
     end  %Losob
-   fprintf(1,'\nSzereg %d. Czas obliczeñ: %.2f',nrs,toc(tKanal));
 end %Lgestow
 %% ================= Sprawdzenie filtracji Fzwdc: yTrc wg Fzwdc, yTr - metod¹ dwuetapow¹ Fzwd i Fzw2 ============  
 m=1; yTrc=[];for(n=LzwcE:Nf) yTrc(m)=Yoryg(n-LzwcE+1:n)'*FzwcE; m=m+1; end

@@ -33,22 +33,23 @@ xIp = min(min(trendTab(:,parzyste))); xAp = max(max(trendTab(:,parzyste)));
     for i = parzyste
         licznik2 = licznik2 +1;
         subplot(4,kolumn,plotNr);
-        plot(trendTab(:,i), Kolor(mod(licznik2-1, p)+1) ); hold on; axis('tight');ax = axis; axis([ax(1:2) xIp xAp]);
+        plot(trendTab(:,i), Kolor(mod(licznik2-1, p)+1) ); hold on; axis('tight');ax = axis; axis([ax(1:2) xIp xAp]); xlabel(sprintf('Kan: %d', plotNr));
         if (mod(licznik2, p) == 0) % modulo liczba osób
             plotNr = plotNr+1; 
-        end  
+        end; 
     end
+    subplot(4,kolumn,1);title('Sygnał skumulowany trendu')
 
     for i = nieparzyste
         licznik2 = licznik2 +1;
         subplot(4,kolumn,plotNr); 
-        plot(trendTab(:,i), Kolor(mod(licznik2-1, p)+1) ); hold on; axis('tight');ax = axis; axis([ax(1:2) xIn xAn]);
+        plot(trendTab(:,i), Kolor(mod(licznik2-1, p)+1) ); hold on; axis('tight');ax = axis; axis([ax(1:2) xIn xAn]); xlabel(sprintf('Kan: %d', plotNr-8));
         if (mod(licznik2, p) == 0) % modulo liczba osób
             plotNr = plotNr+1; 
-        end  
+        end; 
     end
 
-    subplot(4,kolumn,9); title('Energia');
+    if (Lszer < size(trendTab,2)) subplot(4,kolumn,9); title('Energia'); end
 return
     ls = 0;
     for m = nieparzyste % energia

@@ -1,32 +1,42 @@
+
 % function [outputArg1,outputArg2] = (saveAs, OverwrieProtection)
-function figPW(nrPliku, nrKol, ext, katalog, wariantNazw, FigsTZ)
-if(nargin<6) FigsTZ=0; end;
+function figPW(nrPliku, nrKol, ext, katalog, wariantNazw, FigsTZ, FigType)
+% figPW(nrPliku = 1, nrKol=1, ext='png', katalog='figury/', wariantNazw=1, FigsTZ=1, FigType=1)
+% figPW(1, 1, 'png', 'figury', 1, 1,3)
+if(nargin==1) fprintf('%s\n%s', "figPW(nrPliku = 1, nrKol=1, ext='png', katalog='figury/', wariantNazw=1, FigsTZ=1)","figPW(1, 1, 'png', 'figury/', 1, 1, 3)" ); end;  
+% if (exist('FigsTZ','var'))
+%     FigsTZ = 1; 
+%     nrPliku = get(gcf,'Number');
+%     nrKol = get(gcf,'Tag');
+% end;
+if(nargin<6) FigsTZ=0; end;  
 if(nargin<5) wariantNazw=1; end;
-if(nargin<4 || nargin == 1 ) katalog='figury\'; end;
+if(nargin<4 || nargin == 1 ) katalog='figury\'; end; if ~exist(katalog, 'dir') mkdir (katalog); end;
 if(nargin<3) ext ='fig'; end;
-if(nargin<2) % jeœli jeden parametr    
-    if(nargin == 1 && isstr(nrPliku)) 
-        fTitle = nrPliku; % string parametr
-    else fTitle = '_'; end% do zapisywanej nazwy pliku
-    nrName = get( get(gcf,'Number'), 'Name' );
-    if(nargin > 1 && nrPliku < 0  )
-        h1=get(gca,'title');
-        title=get(h1,'string');
-        if( isempty(title) )
-            title( datestr(now,'yyyy-mm-dd HH.MM.ss') ); % default timestamp title
+    
+    if(nargin<2) % jeœli jeden parametr    
+        if(nargin == 1 && isstr(nrPliku)) 
+            fTitle = nrPliku; % string parametr
+        else fTitle = '_'; end% do zapisywanej nazwy pliku
+        nrName = get( get(gcf,'Number'), 'Name' );
+        if(nargin > 1 && nrPliku < 0 )
+            h1=get(gca,'title');
             title=get(h1,'string');
-        else
-            fTitle = ['_' title '_' ];
+            if( isempty(title) )
+                title( datestr(now,'yyyy-mm-dd HH.MM.ss') ); % default timestamp title
+                title=get(h1,'string');
+            else
+                fTitle = ['_' title '_' ];
+            end
         end
-    end
-% title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
-% xlabel('Oœ rzeczywista'); ylabel('Oœ urojona'); 
-% legend(str{:}); 
-    [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
-    print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
-    fprintf("\n\t*%s", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
-    return
-end 
+    % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
+    % xlabel('Oœ rzeczywista'); ylabel('Oœ urojona'); 
+    % legend(str{:}); 
+        [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
+        print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
+        fprintf("\n\t*%s", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
+        return % jeœli bez parametrów
+    end 
 
 h=gcf;
 set(h,'PaperOrientation','Landscape');
@@ -69,104 +79,112 @@ fprintf(1,'\n\t*Zapisano rysunek "%s.%s +.png"',filename,ext);
 %figure(2), plot(t, y); 
 %MyFigFile = '1impulse'; FigsTZ;
 %function FigsTZ( FigType, MyFigFile, h )
-if(FigsTZ)
-    FigType = 1
-LineWidth = 0.75;  % by³o 0.5
-GridAlpha = 0.75;  % procentowo
-%LineStyle=['-'];
-MarkerSize = 3;
-FontSizeTitle = 9;
-FontSizeLabels = 9;
-FontSizeTicks = 8;
-FontSizeLegend = 8;%FontSizeLegend = 16;
-Resolution = 1200;           % 150, 300, 600, 1200
-
-FigX0 = 2; FigY0 = 2;        % (left,down) corner of the window
-FigWidthShort = 5.75;        % window X size (in centimeters) - all = fig + text
-FigWidthLong = 2*5.75;       % window X size (in centimeters) - all = fig + text
-FigHeight = 4.25;            % window Y size 4.25
-PosFigLong  = [.18/2 .2 .89  .690];   % Dell  % PosFigLong  = [.095 .20 .87  .68];   % Asus
-%PosFigShort = [.175  .2 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
- PosFigShort = [.175  .195 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
-%PosFigShort = [.15   .2 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
-if( FigType==1 ) % 1 long figure
-   FigWidth = FigWidthLong; PosFig = PosFigLong; 
-end
-if( FigType==2 ) % 2 short figures, side by side
-   FigWidth = FigWidthShort; PosFig = PosFigShort; 
-end
-%figure('Units','centimeters',...
-%'Position',[FigX0 FigY0 FigWidth FigHeight],...
-%'PaperPositionMode','auto');
-
-set(0,'defaultLineLineWidth', LineWidth);         % set the default line width to lw
-set(0,'defaultLineMarkerSize',MarkerSize);        % set the default line marker size to msz
-%set(0,'defaultLineStyle',LineStyle);             % set default line style
-set(0,'DefaultFigurePaperPositionMode','auto');   % automatyczna wielkoœæ rysunku
-%set(0,'DefaultAxesColorOrder',[0,0,0]);           % czarna linia
-
-%set(h,'markers',MarkerSize);
-
-%set(0,...
-%'LineStyle',LineStyle,...
-%'LineWidth',LineWidth,...
-%'MarkerSize',MarkerSize);
-
-set(gcf,'DefaultLineLineWidth',LineWidth);             % gruboœæ linii wykresów
-%set(gcf,'DefaultMarkerSize',MarkerSize);                % wielkoœæ markera                    
-set(gcf,'Units','centimeters');                        % jednostka wymiarowania okna
-set(gcf,'Position', [FigX0 FigY0 FigWidth FigHeight]); % wymiary okna: (x,y,dx,dy), (x,y)- lewy dolny
-set(gcf,'PaperPositionMode','auto');
-
-%set(gca,'Units','centimeters'); %JB
-set(gca,...                   % axis features
- 'Units','normalized',...
- 'LineWidth',LineWidth,...
- 'GridLineStyle',':', ...
- 'GridAlpha',GridAlpha, ...
- 'Position',PosFig,...   % (left,bottom) (width,hight) - relative, inside the window
- 'FontUnits','points',...
- 'FontWeight','normal',...
- 'FontSize',FontSizeTicks);
-%  'FontName','Times');
-set(get(gca,'Xlabel'),...
-  'FontUnits','points',...
-  'FontWeight','normal',...
-  'FontSize',FontSizeLabels,...
-  'Interpreter','tex')
-%   'FontName','Times')
-set(get(gca,'Ylabel'),...
-  'FontUnits','points',...
-  'FontWeight','normal',...
-  'FontSize',FontSizeLabels,...
-  'Interpreter','tex');
-%   'FontName','Times');
-set(get(gca,'Title'),...
-  'FontUnits','points',...
-  'FontWeight','normal',...
-  'FontSize',FontSizeTitle,...
-  'Interpreter','tex');
-%   'FontName','Times');
-set(get(gca,'Legend'),...
-  'FontUnits','points',...
-  'FontSize',FontSizeLegend,...
-  'Interpreter','tex',...
-  'Location','NorthEast');
-%   'FontName','Times',...
-% Legenda
-child = get( gcf, 'Children' );
-for i = 1:length( child )
-    tag = get( child(i), 'Tag' );
-    if( 1 == strcmp( tag, 'legend' ) )
-        set( child(i),'FontSize',FontSizeLegend,'LineWidth',LineWidth);
-        break;
+ if(FigsTZ)
+    if( ~exist('FigType', 'var') ) FigType = 1; end;
+    LineWidth = 0.75;  % by³o 0.5
+    GridAlpha = 0.75;  % procentowo
+    %LineStyle=['-'];
+    MarkerSize = 3;
+    FontSizeTitle = 9;
+    FontSizeLabels = 9;
+    FontSizeTicks = 8;
+    FontSizeLegend = 8;%FontSizeLegend = 16;
+    Resolution = 1200;           % 150, 300, 600, 1200
+    
+    FigX0 = 2; FigY0 = 2;        % (left,down) corner of the window
+    FigWidthShort = 5.75;        % window X size (in centimeters) - all = fig + text
+    FigWidthLong = 2*5.75;       % window X size (in centimeters) - all = fig + text
+    FigHeight = 4.25;            % window Y size 4.25
+    PosFigLong  = [.18/2 .2 .89  .690];   % Dell  % PosFigLong  = [.095 .20 .87  .68];   % Asus
+    %PosFigShort = [.175  .2 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
+     PosFigShort = [.175  .195 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
+    %PosFigShort = [.15   .2 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
+    font = 'Times'; % 'Times';
+    if( FigType==1 ) % 1 long figure
+       FigWidth = FigWidthLong; PosFig = PosFigLong; 
     end
-end
-MyFigFile = fn
-print( strcat(MyFigFile,'.png'),'-dpng', '-r600');
-% print( strcat(MyFigFile,'.eps'),'-depsc', '-r600');
-end
+    if( FigType==2 ) % 2 short figures, side by side
+       FigWidth = FigWidthShort; PosFig = PosFigShort; 
+    end
+    if( FigType==3 ) % 2 as is on monitor
+       set(gcf,'Units','centimeters')
+       PosFig = get(gcf,'Position'); FigWidth = PosFig(3);
+%        set(gcf,'Units','normalized'); PosFig = get(gcf,'Position');;
+%        FigWidth = FigWidthLong; PosFig = PosFigLong*2; 
+       PosFig = get(gca,'Position');
+    end
+%     figure('Units','centimeters',...
+    %'Position',[FigX0 FigY0 FigWidth FigHeight],...
+    %'PaperPositionMode','auto');
+    
+    set(0,'defaultLineLineWidth', LineWidth);         % set the default line width to lw
+    set(0,'defaultLineMarkerSize',MarkerSize);        % set the default line marker size to msz
+    %set(0,'defaultLineStyle',LineStyle);             % set default line style
+    set(0,'DefaultFigurePaperPositionMode','auto');   % automatyczna wielkoœæ rysunku
+    %set(0,'DefaultAxesColorOrder',[0,0,0]);           % czarna linia
+    
+    %set(h,'markers',MarkerSize);
+    
+    %set(0,...
+    %'LineStyle',LineStyle,...
+    %'LineWidth',LineWidth,...
+    %'MarkerSize',MarkerSize);
+    
+    set(gcf,'DefaultLineLineWidth',LineWidth);             % gruboœæ linii wykresów
+    %set(gcf,'DefaultMarkerSize',MarkerSize);                % wielkoœæ markera                    
+    set(gcf,'Units','centimeters');                        % jednostka wymiarowania okna
+    set(gcf,'Position', [FigX0 FigY0 FigWidth FigHeight]); % wymiary okna: (x,y,dx,dy), (x,y)- lewy dolny
+    set(gcf,'PaperPositionMode','auto');
+%     PosFig = get(gcf,'Position');
+    %set(gca,'Units','centimeters'); %JB
+    set(gca,...                   % axis features
+     'Units','normalized',...
+     'LineWidth',LineWidth,...
+     'GridLineStyle',':', ...
+     'GridAlpha',GridAlpha, ...
+     'Position',PosFig,...   % (left,bottom) (width,hight) - relative, inside the window
+     'FontUnits','points',...
+     'FontWeight','normal',...
+     'FontSize',FontSizeTicks,...
+     'FontName',font);
+    set(get(gca,'Xlabel'),...
+      'FontUnits','points',...
+      'FontWeight','normal',...
+      'FontSize',FontSizeLabels,...
+      'Interpreter','tex',...
+      'FontName',font);
+    set(get(gca,'Ylabel'),...
+      'FontUnits','points',...
+      'FontWeight','normal',...
+      'FontSize',FontSizeLabels,...
+      'Interpreter','tex',...
+      'FontName',font);
+    set(get(gca,'Title'),...
+      'FontUnits','points',...
+      'FontWeight','normal',...
+      'FontSize',FontSizeTitle,...
+      'Interpreter','tex',...
+      'FontName',font);
+    set(get(gca,'Legend'),...
+      'FontUnits','points',...
+      'FontSize',FontSizeLegend,...
+      'Interpreter','tex',...
+      'Location','NorthEast',...
+      'FontName',font);
+    % Legenda
+    child = get( gcf, 'Children' );
+    for i = 1:length( child )
+        tag = get( child(i), 'Tag' );
+        if( 1 == strcmp( tag, 'legend' ) )
+            set( child(i),'FontSize',FontSizeLegend,'LineWidth',LineWidth);
+            break;
+        end
+    end
+    % MyFigFile = fn
+    print( strcat(filename,'.png'),'-dpng', '-r600');
+    % print( strcat(MyFigFile,'.eps'),'-depsc', '-r600');
  end
+end
 
 
  function [name,val] = nextname(bnm,sfx,ext,otp) %#ok<*ISMAT>
@@ -277,4 +295,15 @@ if isa(arr,'string') && isscalar(arr)
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%nn1s2c
- 
+
+%% make new figure with one subplot of from old fig
+% figure(3);
+% subplot(4,4,2);
+% ax1=gca;
+% 
+% figure;
+% tcl=tiledlayout(1,1);
+% ax1.Parent=tcl;
+% ax1.Layout.Tile=1;
+% ax1.XLabel = tcl.XLabel
+% ax1.YLabel = tcl.YLabel
