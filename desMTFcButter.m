@@ -220,7 +220,7 @@ if(fig)
         if(nf<nfpocz) fi(1)=0; fi(nf,2:lw)=tauhP(nf).*Om(2:lw); end
         plot(x,fi(nf,1:lA),kol); hold on;  
         if(nf==Lfo && Lfo>4) axis('tight'); ax2(2,:)=axis; end
-        if(nf==4) axis('tight'); ax2(1,:)=axis; end
+        if(nff==1) axis('tight'); ax2(1,:)=axis; end
     end
     %=round(2*pi/omT); %find(abs(Om/omT-1)<=1/Lxf); om1=om1(1);
     for(nff=nff1:Lfo)
