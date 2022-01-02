@@ -1,7 +1,8 @@
-% widmo mocy, porownywane rendow% suma kwadratow roznic
-clear all;  tStart = tic; global ax1 ax2 szerIndex;
+clear all;  
+tStart = tic; 
+global ax1 ax2 szerIndex;
 Takcji = 5000; %5*392;
-Symul = 0; wgEnerg = 2; Integr = 1; BigData = 0; BSS = 0;  % sourse of data (from DB or one file
+Symul = 0; wgEnerg = 0; Integr = 0; BigData = 0; BSS = 0;  % sourse of data (from DB or one file
 % Integr=0 sygnał pomiarowy bez zsumowania (orygin.); Integr=1 sygnał pomiarowy zsumowany;
 % wgEnerg=0 synal przetw. wg Integr jest filtrowany i liczony tylko raz;
 % wgEnerg>0 synal przetw. wg Integr jest filtrowany, a potem liczymy Y^2 (liczony dwa razy)
@@ -229,60 +230,53 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
             Y2 = Ayf.^2; Nakt = N;
             NfC = Nakt - N2; % koniec segmentu centralnego
 
-            for (nfw = 1:Lfw)
-                if (~isempty(MTF(ntypZ, LFg + 1 + nfw).M) & MTF(ntypZ, LFg + 1 + nfw).Tu ~= Tu) MTF(ntypZ, LFg + 1 + nfw).M = []; end
-
-                if (isempty(MTF(ntypZ, LFg + 1 + nfw).M))
-                    [M, F0, Fzw, Ff, Ffshf, ktory] = MTFdesign(ntypZ, Tu);
-                    [lf, N1] = size(F0); [lf, N2] = size(Ff); N1f = N1 + 1; nh1 = M / Tu;
-                    MTF(ntypZ, LFg + 1 + nfw).Tu = Tu; MTF(ntypZ, LFg + 1 + nfw).M = M; MTF(ntypZ, LFg + 1 + nfw).F0 = F0; MTF(ntypZ, LFg + 1 + nfw).Fzw = Fzw; MTF(ntypZ, LFg + 1 + nfw).Ff = Ff; MTF(ntypZ, LFg + 1 + nfw).Ffshf = Ffshf;
-                    %MTF(ntypZ,LFg+1+nfw).ktory=ktory; MTF(ntypZ,LFg+1+nfw).nh1=nh1;
+           for(nfw=1:Lfw)
+                if(~isempty(MTF(ntypZ,LFg+1+nfw).M)& MTF(ntypZ,LFg+1+nfw).Tu~=Tu) MTF(ntypZ,LFg+1+nfw).M=[]; end
+                if(isempty(MTF(ntypZ,LFg+1+nfw).M))
+                    if(0) [bx,bx, thPf, MTF, Fzwc, Ffc, Fzwd, Fzwd2, LpFc]=desMTFcButter(ntypZ,[Tud Tud1]); %,rzadB,lT)
+                    else [M, Fzw, Ff, F0]=MTFdesign(ntypZ, Tu);
+                    end
+                    [lf,N1]=size(F0); [lf,N2]=size(Ff); N1f=N1+1; nh1=M/Tu;
+                    MTF(ntypZ,LFg+1+nfw).Tu=Tu;MTF(ntypZ,LFg+1+nfw).M=M; MTF(ntypZ,LFg+1+nfw).F0=F0; MTF(ntypZ,LFg+1+nfw).Fzw=Fzw; 
+                    MTF(ntypZ,LFg+1+nfw).Ff=Ff; %MTF(ntypZ,LFg+1+nfw).ktory=ktory; MTF(ntypZ,LFg+1+nfw).nh1=nh1;
                     %MTF(ntypZ,LFg+1+nfw).N1=N1; MTF(ntypZ,LFg+1+nfw).N2=N2; MTF(ntypZ,LFg+1+nfw).lf=lf;
                 else
-                    M = MTF(ntypZ, LFg + 1 + nfw).M; F0 = MTF(ntypZ, LFg + 1 + nfw).F0; Fzw = MTF(ntypZ, LFg + 1 + nfw).Fzw; Ff = MTF(ntypZ, LFg + 1 + nfw).Ff; Ffshf = MTF(ntypZ, LFg + 1 + nfw).Ffshf;
+                    M=MTF(ntypZ,LFg+1+nfw).M; F0=MTF(ntypZ,LFg+1+nfw).F0; Fzw=MTF(ntypZ,LFg+1+nfw).Fzw; Ff=MTF(ntypZ,LFg+1+nfw).Ff; 
+                    %Ffshf=MTF(ntypZ,LFg+1+nfw).Ffshf;
                     %ktory=MTF(ntypZ,LFg+1+nfw).ktory; nh1=MTF(ntypZ,LFg+1+nfw).nh1; N1=MTF(ntypZ,LFg+1+nfw).N1; N2=MTF(ntypZ,LFg+1+nfw).N2; lf=MTF(ntypZ,LFg+1+nfw).lf;
-                    [lf, N1] = size(F0); [lf, N2] = size(Ff); N1f = N1 + 1; nh1 = M / Tu;
+                    [lf,N1]=size(F0); [lf,N2]=size(Ff); N1f=N1+1; nh1=M/Tu;
                 end
-
                 fprintf(1, '\nCzas syntezy =%.2f s', toc); tic;
                 Lf = M - 1; NfCx = Nakt - N2;
                 % ---------- Filtracja w segmencie startowym ---------------------------------------------
-                AYo = Yo2(1:lf) * F0;
-
-                if (nfw == 1)
-                    Af = Y(1:lf) * F0; Af(1) = 0; fA = Af;
-                    Af2 = Y2(1:lf) * F0; Af2(1) = 0; fA2 = Af2; %Y(1);
-                    fAYo = AYo;
-
-                    for (n = N1:-1:1)
-                        m = N1 - n; i = n + floor(0.15 * m);
-
-                        if (i - n > 1)
-
-                            for (k = n + 1:i)
-
-                                if (nfw == 1)
-                                    Af(k) = fA(n) + (Af(i + 1) - fA(n)) / (i + 1 - n) * (k - n);
-                                    Af2(k) = fA2(n) + (Af2(i + 1) - fA2(n)) / (i + 1 - n) * (k - n);
+               AYo=Yo2(1:lf)*F0;
+                if(nfw==1)
+                    Af=Y(1:lf)*F0; Af(1)=0; fA=Af;
+                    Af2=Y2(1:lf)*F0; Af2(1)=0; fA2=Af2; %Y(1);
+                    fAYo=AYo;
+                    for(n=N1:-1:1)
+                        m=N1-n; i=n+floor(0.15*m);
+                        if(i-n>1)
+                            for(k=n+1:i)
+                                if(nfw==1)
+                                    Af(k)=fA(n)+(Af(i+1)-fA(n))/(i+1-n)*(k-n);
+                                    Af2(k)=fA2(n)+(Af2(i+1)-fA2(n))/(i+1-n)*(k-n);
                                 end
-
-                                AYo(k) = fAYo(n) + (AYo(i + 1) - fAYo(n)) / (i + 1 - n) * (k - n);
+                                AYo(k)=fAYo(n)+(AYo(i+1)-fAYo(n))/(i+1-n)*(k-n);
                             end,
-                        else if(nfw == 1) Af(i) = fA(n); Af2(i) = fA2(n); end, AYo(i) = fAYo(n);
+                        else  if(nfw==1) Af(i)=fA(n); Af2(i)=fA2(n); end, AYo(i)=fAYo(n);
                         end,
-                    end, if(nfw == 2) figure(1); plot([1:N1], fAYo, 'r', [1:N1], AYo, 'k'); end
-                    % ========== Filtracja centralna ========
+                    end,if(nfw==2) figure(1); plot([1:N1],fAYo,'r',[1:N1],AYo,'k'); end   
+% ========== Filtracja centralna ========
                 end
 
-                n0Fzw = 0; npC = N1 + 1; %Lf+1; %=M poczatek segmentu centralnego
-
-                for (n = npC:Nakt - N2)
-                    n1Fzw = n0Fzw + 1;
-                    if (nfw == 1) Af(n) = Y(n1Fzw:n0Fzw + lf) * Fzw; Af2(n) = Y2(n1Fzw:n0Fzw + lf) * Fzw; end
-                    AYo(n) = Yo2(n1Fzw:n0Fzw + lf) * Fzw;
-                    n0Fzw = n1Fzw;
+                n0Fzw=0; npC=N1+1; %Lf+1; %=M poczatek segmentu centralnego
+                for(n=npC:Nakt-N2)
+                    n1Fzw=n0Fzw+1;
+                    if(nfw==1) Af(n)=Y(n1Fzw:n0Fzw+lf)*Fzw; Af2(n)=Y2(n1Fzw:n0Fzw+lf)*Fzw; end
+                    AYo(n)=Yo2(n1Fzw:n0Fzw+lf)*Fzw;
+                    n0Fzw=n1Fzw;
                 end;
-
                 % Af wygładzone widmo Ayf; Af2 wygładzone widmo Ayf^2; Ayo wygładzone widmo
                 % AYor obliczone widmo reszt trendu; % AYo wygladzone widmo Ayor reszt trendu
                 % ----- Teraz ruchoma sekcja koncowa -------------------------
@@ -352,7 +346,7 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
             Ka=length(afB); Kb=length(bfB); 
             yTrB(1:Kb,1)=zeros(Kb,1); NB=length(Yoryg);
             for(n=Kb+1:NB) yTrB(n,1)=-afB(2:Ka)*yTrB(n-[1:Ka-1],1)+bfB(1:Kb)*Yoryg(n-[0:Kb-1],1); end, 
-            ndel=round(tauhP); txtau='\tau';
+            ndel=round(abs(tauhP)); txtau='\tau';
             % ............... Teraz wykresy dla yTrB .....................
             figure(nFig); subplot(4,lcol,nCol); kol=Kolor(nosoby);
             sygnTr=(yTrB-mean(yTrB))/SigyTr(wgEn+1)+SrYtr(wgEn+1); 
@@ -457,11 +451,11 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
             EnAy = mean(Ay.^2); EnwY = sum(wY .* wY); % EnAy=EnwY+1.4e-13; EnAfm/EnAyf=1.0058 % sprawdzone !!!!!!
             AfcY = AYor(1:length(Afc)) .* Afc; wxx = EnwY / EnY; % Nie uzywane !!!
             EnAfm = mean(Afm.^2); EnAyf = mean(Ayf.^2); %*2/EnAy-1, %[((mean(Afm.^2)/lT)/lT)/-1]
-            % Generujemy wzorcowy/referencyjny sygnaĹ‚ wejĹ›ciowy i jego widmo AYr
+            % Generujemy wzorcowy/referencyjny sygnał wejściowy i jego widmo AYr
             % AYr=abs(fft([ones(1,lw) zeros(1,lT-lw)])); wYr=sqrt(mean(AYr.^2));
-            % UWAGA !!! dopisanie dowolnej liczby zer dla transformowanego szeregu nie zmienia energii sygnaĹ‚u, a zagÄ™szcza obliczane czÄ™stoĹ›ci widma !!
-            % WspĂłĹ‚czynnik przeliczenia widma - wA=sqrt(energia sygnaĹ‚u orygin.), wA=wYr+eps
-            % ZaleĹĽnoĹ›Ä‡: abs(FY)=abs((ar+j*ai)*(br+j*bi))=(A*B);
+            % UWAGA !!! dopisanie dowolnej liczby zer dla transformowanego szeregu nie zmienia energii sygnału, a zagęszcza obliczane częstości widma !!
+            % Współczynnik przeliczenia widma - wA=sqrt(energia sygnału orygin.), wA=wYr+eps
+            % Zależność: abs(FY)=abs((ar+j*ai)*(br+j*bi))=(A*B);
             wA = AYog(1:lAf); AYo = Afc(1:lAf) .* wA;
             if (bezTrendu) AYTr = AYo + AYoTr(1:lAf) .* Afc(1:lAf); AfTr = ATr(1:lAf) .* Afc(1:lAf); end
             % AYoTr wygladzone widmo ATr trendu
@@ -503,6 +497,10 @@ for (nrs = 1:Lgestow) %2:2) % Petla po szeregach
 
             fprintf(1, '\nCzas obliczeń: %.2f', toc);
             trendTab = [ trendTab sygnTr ];
+            dTr=[0 diff(yTr)];
+            dTr=[0 diff(yTr)];ldTr=length(dTr);  nx=find(dTr(2:ldTr).*dTr(1:ldTr-1)<0); length(nx); figure(21); plot([1:ldTr],yTr,'k',nx,yTr(nx),'r*')
+
+            wmaxTr=yTr(nx)/mean(yTr);
         end % wersja Y^2 Y        
         nowy = 0;
     end %Losob   
@@ -511,19 +509,14 @@ end %Lgestow
 figure(14); %% skala trendendów
 
 plotTrendStaticAxis(Lszer, Ldsz, trendTab); 
- 
-%  hold off;
-% for( i = nieparzyste ) ;
-%     plotTrend(i, Ldsz, Lszer, xIn, xAn, trendTab); if(i==1) title('Skumulowany'); end; if (i == 3) sgtitle(append(fnames));end
-% end 
-% 
-% hold off;
-% for( i = parzyste ); 
-%     plotTrend(i, Ldsz, Lszer, xIp, xAp, trendTab); if(i==2) title('Moc'); end
-% end
+
+%TESTY DTW
+figure; dtwe = dtw(trendTab(:,1),trendTab(:,17))
+figure; dtws = dtw(trendTab(:,1),trendTab(:,17), 'squared')
+
 %% ================= Sprawdzenie filtracji Fzwdc: yTrc wg Fzwdc, yTr - metodą dwuetapową Fzwd i Fzw2 ============
 m = 1; yTrc = []; for(n = Lzwc:Nf) yTrc(m) = Yoryg(n - Lzwc + 1:n)' * Fzwc; m = m + 1; end
-figure(1); subplot(1, 1, 1); plot(nY1Tr:nYfTr, yTrc, 'r', nY1Tr:nYfTr, yTr, 'k'); axis('tight');
+figure(1111); subplot(1, 1, 1); plot(nY1Tr:nYfTr, yTrc, 'r', nY1Tr:nYfTr, yTr, 'k'); axis('tight');
 nx = find(abs(yTrc(1:length(yTr)) - yTr) > 1.e-8); mm = length(nx); title('Sprawdzenie filtracji Fzwdc: ');
 % ...... Dokladna prezentacja filtru dolnego MTF:
 figure(2);lA=round(0.3*lAx); x=wTuf*[0:lA-1]; plot(x,Afdd(1:lA),'r--',x,Afdg(1:lA),'m--',x,Afd(1:lA),'r'); axis('tight'); ax=axis; hold on; plot([1 1],ax(3:4),'b--'); hold off;
