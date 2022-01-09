@@ -144,7 +144,7 @@ WcB=nhP(2)/Lxf; %Tud(1)*200);
     end
     tauF(1)=0; tauF(2:lw)=fi(nf,2:lw)./Om(2:lw);
     tauhP(nf)=mean(tauF(2:ihP)); tauA01(nf)=mean(tauF(2:iA01)); tauTu(nf)=mean(tauF(2:iom1(1)));
-    tauhP(nf)=round(tauhP(nf)); tauA01=round(tauA01(nf)); tauTu=round(tauTu(nf)); 
+    tauhP(nf)=round((tauhP(nf)+tauTu(nf))/2); tauA01=round(tauA01(nf)); tauTu=round(tauTu(nf)); 
 else bf=1; af=1; tauhP(1)=0; Amp(1)=1; fi(1)=1;  WcB=0; 
 end
 if(nargout<12 && fig<=0) return; end
@@ -197,7 +197,7 @@ if(rzad>0 && jestButter==0)
     end
     tauF(1)=0; tauF(2:lw)=fi(nf,2:lw)./Om(2:lw);
     tauhP(nf)=mean(tauF(2:ihP)); tauA01(nf)=mean(tauF(2:iA01)); tauTu(nf)=mean(tauF(2:iom1(1)));
-    tauhP(nf)=round(tauhP(nf)); tauA01=round(tauA01); tauTu=round(tauTu); 
+    tauhP(nf)=round((tauhP(nf)+tauTu(nf))/2); tauA01=round(tauA01); tauTu=round(tauTu); 
 end
 if(fig)
     figure(fig);

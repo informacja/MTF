@@ -1,8 +1,8 @@
-% widmo mocy, porownywane rendow% suma kwadratow roznic
-clear all; 
-global ax1 ax2;
-Takcji=5000; %5*392; 
-Symul=0; wgEnerg=2;  Integr=1; 
+clear all;  
+tStart = tic; 
+global ax1 ax2;% szerIndex;
+Takcji = 5000; %5*392;
+Symul = 0; wgEnerg = 2; Integr = 1; BigData = 0; BSS = 0;  % sourse of data (from DB or one file
 % Integr=0 sygna³ pomiarowy bez zsumowania (orygin.); Integr=1 sygna³ pomiarowy zsumowany; 
 % wgEnerg=0 synal przetw. wg Integr jest filtrowany i liczony tylko raz; 
 % wgEnerg>0 synal przetw. wg Integr jest filtrowany, a potem liczymy Y^2 (liczony dwa razy) 
@@ -16,29 +16,9 @@ if(Symul)
     nrwykr=1:Lszer; %[1:Ldsz];
     tx=sprintf('Badany sygnal SYMULOWANY Ysyg(%d)',Ldsz);
 else
-    fnames = 'dane/spoczynek.wav';    
-    fnames1 = 'dane/zginanie.wav';     
-    fnames2 = 'dane/zginanie2.wav'; 
-    
-    %fnames = 'dane/zaciœniêta_piêœæ_statycznie.wav'; 
-    %fnames = 'dane/zaciœniêta_piêœæ_dynamicznie.wav'; %'../bioniczna/bioniczna/data/01108.wav'
-    [data, fs] = audioread(fnames1); %data = data(:,2);
-     data2 = audioread(fnames2); 
-     data=[data data2]; 
-     %wczytajEMG; data = rawData; 
-    [Ldsz Lszer] = size(data); ldC=Ldsz; 
+     wczytajEMG;
+    [Ldsz Lszer] = size(data); ldC = Ldsz;
     SZEREGI = data;
-    if(0)
-        % Blind source separation ============
-        tau = 2;
-        yT = data'; n =Ldsz;
-        Q=yT(:,1:n-tau)*yT(:,tau+1:n)'+yT(:,tau+1:n)*yT(:,1:n-tau)';
-        
-        [W,D] = eig(yT*yT',Q);    
-        S = W'*yT;    
-        Y = S'; K=Y'*Y; 
-        %SZER = [Y data ];
-    end
     bezLpred=0; 
     Ld0=Takcji/10; Ldf=Ldsz-Ld0; sLd=Ldf/6; x=([1:Ldf])/sLd; f=(x.^2).*exp(-((x-1).^2)/2);f=2*(f-(f(end)-f(1))/(length(x))*x*sLd);
     %or(i=1:Lszer) SZEREGI(Ld0+1:Ldsz,i)=SZEREGI(Ld0+1:Ldsz,i)+f'; end
@@ -60,12 +40,28 @@ typFf=1; % - typ filtru konc.: 0 nowy, 1 zwykly
 % =============== Parametry szergu i filtra ==============
 LSzeregow=length(nrwykr); % liczba badanych szeregÃ³w
 %close all, 
-Lk=0; LC=LSzeregow; Lgestow=round(LC/2); Losob=2;
-nfig=nfig0; nFig=nfig0+1+Lgestow;
+Lk = 0; Losob=Lszer/8; Lgestow=round(LSzeregow/Losob);  %Losob = size(SZEREGI,2)/8; Lgestow = LSzeregow/8;  %LC = LSzeregow;Lgestow = round(LC / 2); Losob = 2;
+nfig = nfig0; nFig = nfig0 + 1 + Lgestow; trendTab = []
 % ----------- Okreœlenie zakresu lT analizy widm (tak aby dobrze spróbkowaæ widmo)
 lTx=Tud*200; lTx=Tud*500; %1000;
 nTx=ceil(lTx/4096); lT=nTx*4096; %500; %350; %75; %round(lA/10);
 Ewykl=2; 
+
+if(0) % spectrogram
+    Nwin = 512; kaiser(128,18);
+    fpr = 2048;
+    Nfft = fpr/2;
+    k    = 16;
+    for( person = 1:size(SZEREGI,2)/8 )
+        f=figure(19+person); 
+        for (ch = 1:8)
+            subplot(4,2,ch); spectrogram(SZEREGI(:,ch*person), kaiser(Nwin,k), Nwin - k, Nfft, fpr, 'yaxis');
+        end
+        set(f,'WindowState','maximized'); sgtitle(fnames(person));
+        figPW('kaiser',person,'png','figury/win/');
+    end
+end % spectrogram
+
 % ============ Synteza filtrów dolnoprzepustowych MTFd i Butter5 ===================
 %  Wywo³anie desMTFcButter() z parametrem figF=0 daje wynik bez wykresow charakterystyk Bodego 
 %ntypZ=typMTF(nrVar);  % ===== Typ filtru ============= 2 klasyczny, 3 trend lin.; 5 trend 3.rzÄ™du
@@ -157,7 +153,7 @@ for(nrs=1:Lgestow)  %2:2) % Petla po szeregach
         nrS=(nosoby-1)*Lgestow+nrwykr(nrs); 
         nrPliku=1; nrKol=nrs;
         if(exist('nazwy')) nplik=nazwy(nrS,:); else nplik=sprintf('Series%d',nrS); end
-        txg=sprintf('SZEREG(1:%d,%d) z pliku %s',Ldsz,nrS,fnames);
+        txg=sprintf('SZEREG(1:%d,%d) z pliku %s',Ldsz,nrS,fnames(nosoby));
         for(wgEn=0:LwgE)
             nCol=8*(wgEn)+nrs;
             Yorsum=SZEREGI(:,nrS); 
@@ -459,12 +455,42 @@ for(nrs=1:Lgestow)  %2:2) % Petla po szeregach
                     hold off;
                 end
                 ylabel('Amplituda'); xlabel('Widmo amplit.trendu ATr(f/f_g)');
+%                                 subplot(4, 4, 4); %subplot(4,lcol,ncol); %subplot(2,2,2); %hold on;
+%                 y = SZEREGI(:, nosoby)'; z = Yorsum'; w = [y z];
+%                 wMean = mean(w); wSigma = std(w);
+% 
+%                 for (i = 1:length(y))
+%                     y(i) = (y(i) - wMean) / wSigma;
+%                     z(i) = (z(i) - wMean) / wSigma;
+%                 end
+% 
+%                 %                 sum(x(0:N-1).^2)=N*mean(x)^2+N/2*sum(Apm^2(1:N/2))=mean(Af^2(1:N))=2*mean((Amp*N/2)^2(1:N/2)); Amp=Af*2/N
+%                 N = Ldsz; K = 1; %y=50+100*(sin(2*pi/200*t)+sin(2*pi/10*t));
+%                 Afs = abs(fft([y zeros(1, (K - 1) * N)])); As = Afs * 2 / (N); Afn = abs(fft([z zeros(1, (K - 1) * N)])); Asn = Afn * 2 / (N);
+%                 Afs = abs(fft(y)); As = Afs * 2 / (N); Afn = abs(fft(z)); Asn = Afn * 2 / (N);
+%                 x1 = [0:round((N - 1) / 2)]; xn = [0:round((K * N - 1) / 2)];
+%                 plot(xn * 2048 / (K * N - 1), Asn(xn + 1), 'r', x1 * 2048 / (K * N - 1), As(x1 + 1), 'k'); xlabel(sprintf('Spectrum: zmierzony(%d)_k,\n %s(%d)_r [Hz]', nosoby, txY, nrS)); axis('tight');
+
             end
+%             trendTab = [ trendTab; sygnTr ];
+            dTr=[0 diff(yTr)];
+            dTr=[0 diff(yTr)];ldTr=length(dTr);  nx=find(dTr(2:ldTr).*dTr(1:ldTr-1)<0); length(nx); figure(21); plot([1:ldTr],yTr,'k',nx,yTr(nx),'r*')
+
+            wmaxTr=yTr(nx)/mean(yTr);
          end  % wersja Y^2 Y
         nowy=0; 
     end  %Losob
    fprintf(1,'\nSzereg %d. Czas obliczeñ: %.2f',nrs,toc(tKanal));
 end %Lgestow
+
+figure(14); %% skala trendendów
+
+% plotTrendStaticAxis(Lszer, Ldsz, trendTab); 
+
+%TESTY DTW
+figure; dtwe = dtw(trendTab(:,1),trendTab(:,17));
+figure; dtws = dtw(trendTab(:,1),trendTab(:,17), 'squared');
+
 %% ================= Sprawdzenie filtracji Fzwdc: yTrc wg Fzwdc, yTr - metod¹ dwuetapow¹ Fzwd i Fzw2 ============  
 m=1; yTrc=[];for(n=LzwcE:Nf) yTrc(m)=Yoryg(n-LzwcE+1:n)'*FzwcE; m=m+1; end
 nYTr1=(LzwcE-1)/2; nYTrf=nYTr1+length(yTrc); nYTr1=nYTr1+1;
@@ -474,9 +500,14 @@ nx=find(abs(yTrc(1:length(yTr))-yTr)>1.e-8); mm=length(nx),
 % ...... Dokladna prezentacja filtru dolnego MTF:
 figure(2);lA=round(0.3*lAx); x=wTuf*[0:lA-1]; plot(x,Afdd(1:lA),'r--',x,Afdg(1:lA),'m--',x,Afd(1:lA),'r'); axis('tight'); ax=axis; hold on; plot([1 1],ax(3:4),'b--'); hold off;
 c=1; %% ========================================================================================================= 
-sgtitle(sprintf('Takcji=%d', Takcji));%/nCzerwony zaporowy/n szerokoprzepustowy/n poprawka
-sgtitle(sprintf('Surowe Dane'));%/nCzerwony zaporowy/n szerokoprzepustowy/n poprawka
-figPW;
+% sgtitle(sprintf('Trendy ')); %z Blind Source Separation /nCzerwony zaporowy/n szerokoprzepustowy/n poprawka
+fprintf('\nCzas wykonywania obliczeñ i rysowania: %gs', toc(tStart));
+
+[path, filename, Fext] = fileparts(fnames(1));
+figLetter = char(65+2^0*BSS+2^1*wgEnerg+2^2*Integr+2^3*BigData+2^4*Symul); char(65+figLetter); % figure countig num
+nFig = 11; set(figure(nFig),'WindowState','maximized');pause(.1); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS));
+nFig = 14; set(figure(nFig),'WindowState','maximized');pause(.1); figPW(sprintf('%s_%s_S%dE%dI%dB%dfig', figLetter, filename, Symul, wgEnerg, Integr, BSS), nFig, 'fig', 'figury/', 2);
+
 % zapiszFig('3');
 % Test widma: Tw.Parsevala - energia sygnaÅ‚u=Å›rednia(widma mocy): 
 % sum(x(0:N-1).^2)=N*mean(x)^2+N/2*sum(Apm^2(i=1:N/2))=mean(Af^2(1:N))=2*mean((Amp*N/2)^2(1:N/2)); Amp=Af*2/N   

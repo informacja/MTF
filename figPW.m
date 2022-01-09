@@ -34,7 +34,7 @@ if(nargin<3) ext ='fig'; end;
     % legend(str{:}); 
         [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
         print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
-        fprintf("\n\t*%s", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
+        fprintf("\t*%s\n", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
         return % jeœli bez parametrów
     end 
 
@@ -297,13 +297,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%nn1s2c
 
 %% make new figure with one subplot of from old fig
-% figure(3);
-% subplot(4,4,2);
-% ax1=gca;
-% 
-% figure;
-% tcl=tiledlayout(1,1);
-% ax1.Parent=tcl;
-% ax1.Layout.Tile=1;
-% ax1.XLabel = tcl.XLabel
-% ax1.YLabel = tcl.YLabel
+% nFig = 6;
+% for i=14
+%     figure(nFig); ncol = i;
+%     subplot(4,4,ncol);
+%     ax1=gca;
+%     
+%     figure;
+%     tcl=tiledlayout(1,1);
+%     ax1.Parent=tcl;
+%     ax1.Layout.Tile=1;
+% %     ax1.XLabel = tcl.XLabel      
+% %     ax1.YLabel = tcl.YLabel
+%     
+%     figPW(nFig, ncol, 'png', 'figury/', 1, 1, 3)
+% end
