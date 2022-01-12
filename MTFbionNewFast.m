@@ -4,7 +4,7 @@ if(~exist('Odczyt','var')) clear all; Odczyt=1; data=[]; else if(Odczyt) clear a
 global  ax2;
 tStart=tic; 
 Takcji=5000; T1sek=2048; dt=1/T1sek; TNyq=2/T1sek; %5*392; 
-Symul=0; wgEnerg=2;  Integr=1; BSS=1; BigData=0;
+Symul=0; wgEnerg=2;  Integr=0; BSS=0; BigData=0;
 % Integr=0 sygna³ pomiarowy bez zsumowania (orygin.); Integr=1 sygna³ pomiarowy zsumowany; 
 % wgEnerg=0 synal przetw. wg Integr jest filtrowany i liczony tylko raz; 
 % wgEnerg>0 synal przetw. wg Integr jest filtrowany, a potem liczymy Y^2 (liczony dwa razy) 

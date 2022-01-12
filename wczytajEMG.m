@@ -10,7 +10,7 @@ if(~BigData)
 %     fnames = [fnames "zaciśnięta_pięść_statycznie.wav"];
 %     fnames = [fnames "zaciśnięta_pięść_dynamicznie.wav"]; %"../bioniczna/bioniczna/data/01108.wav"
 %------------------------------------------------------------------ 7 sekund
-fnames = [fnames "updown.wav"];   
+% fnames = [fnames "updown.wav"];   
 % fnames = [fnames "monika/serdeczny2.wav"];  
 %     fnames = [fnames "7podnoszeniebranchusradialis.wav"];
 %     fnames = [fnames "7kciukwgorę.wav"]; %oderwana elektroda pod koniec 4 kanał
@@ -32,13 +32,13 @@ fnames = [fnames "updown.wav"];
 %     fnames = [fnames "krystynka/zginanie3.wav"];
 %     fnames = [fnames "krystynka/zginanie4.wav"];
 %     fnames = [fnames "tomasz/zginanie.wav"];
-%     fnames = [fnames "tomasz/serdeczny.wav"];
+    fnames = [fnames "tomasz/serdeczny.wav"];
 %     fnames = [fnames "tomasz/thub.wav"];
 %  fnames = [fnames "tomasz/viktoria.wav"];
 % fnames = [fnames "tomasz/serdeczny2.wav"];  
-% fnames = [fnames "tomasz/serdeczny3.wav"]; 
-% fnames = [fnames "krzysztof/serdeczny.wav"];
-% fnames = [fnames "monika/serdeczny.wav"];   
+fnames = [fnames "tomasz/serdeczny3.wav"]; 
+fnames = [fnames "krzysztof/serdeczny.wav"];
+fnames = [fnames "monika/serdeczny.wav"];   
 fnames = [fnames "serdecznyPiotr.wav"];   
 
 
