@@ -10,58 +10,6 @@ EMG to powierzchniowe (eng. surface zwane też globalnym) badanie bioelektryczne
   ![MM](figury/mapMTF.png)
 ](https://coggle.it/diagram/YbIUH-TqItosZrAC/t/-/47a919cd5319f9533d671f64049f234e41e9f24484d799b7f4371e7f052dabd4)
 
-Spis treści
-Wstęp	5
-1 Omówienie mechanizmów biologicznego sterowania pracą mięśni	8
-1.1 Teoria biologicznego sterowania ruchem	11
-1.1.1 Jednostka motoryczna i receptory mięśniowe	11
-1.1.1.1 Wola — decyzje psychologiczne, a sygnały bioniczne	11
-1.1.1.2 Propriocepcja	12
-1.1.1.3 Układ ruchu	12
-1.1.1.4 Sensoryczna informacja zwrotna	12
-1.1.1.5 Zdolność adaptacji	12
-1.1.2 Kluczowe koncepcje w zrozumieniu kontroli motorycznej	13
-1.1.2.1 Segregacja funkcjonalna	13
-1.1.2.2 Organizacja hierarchiczna	13
-1.1.3 Rdzeń kręgowy: pierwszy poziom hierarchiczny	13
-1.1.4 Neurony ruchowe	13
-1.1.4.1 Pula neuronów ruchowych	14
-1.1.4.2 Pojedyncze włókno mięśniowe	15
-1.1.5 Kontrola siły mięśni	15
-1.1.5.1 Tempo odpalania	16
-1.1.5.2 Zasada rozmiaru	16
-1.1.6 Neurony ruchowe gamma	17
-2 Wykorzystane techniki pomiarowe	19
-2.1 Zakres badań	19
-2.1.1 Sprzęt pomiarowy	19
-2.1.1.1 Elektrody	19
-2.1.2 Analiza merytoryczna źródeł zakłóceń i szumów pomiarowych	21
-2.1.3 Oprogramowanie systemu pomiarowego	23
-2.1.3.1 Konfiguracja	23
-2.1.4 Czynności przed zbieraniem sygnałów	23
-2.1.4.1 Przygotowanie skóry	24
-2.1.4.2 Ułożenie elektrod	24
-3 Wykorzystane metody przetwarzania sygnałów	25
-3.1 Historyczne początki	25
-3.2 Konstrukcja sygnałów diagnostycznych w dziedzinie czasu	25
-3.3 Analiza widmowa sygnałów diagnostycznych	28
-3.4 Synteza filtrów cyfrowych	29
-3.4.1 Zasady filtracji cyfrowej	29
-3.4.2 Synteza filtrów FIR typu MTF	31
-3.4.3 Projektowanie filtrów Butterwortha	34
-4 Badania właściwości sygnałów diagnostycznych EMG	36
-4.1 Cel badań i przeprowadzone eksperymenty	36
-4.2 Omówienie reprezentatywnych wyników badań	38
-4.2.1 Badania zgięcia palców	38
-5 Zakończenie	46
-6 Bibliografia	47
-7 Aneks - Sygnał ⚡ Obiekt 📽️ Model 💭	49
-7.1 Podstawy - metajęzyk abstrakcji, pośredniczący w osiąganiu celu	49
-7.2 Dziedzina określa ograniczenie warstwy eksperckiej znaczenia słów	49
-7.3 Czym różni się obiekt od modelu?	50
-7.4 Przypadki użycia (Use Case from UML)	51
-7.5 Budowanie modelu	51
-7.6 Rozwój Liniowej Dynamiki	52
 
 ## 0.1 Wstęp
 
@@ -213,9 +161,9 @@ Dla potrzeb badań autor wykonał oprogramowanie w języku C/C++ o nazwie Finger
 Listing 1. Konfiguracja aplikacji EMG Analyzer transferującej sygnał użyteczny.
 
 ```cpp
-#define DSIZE 4096		        // Data
-#define NCH   8			          // Number of Chanels
-#define FS    2048			      // Frequency Sampling 
+#define DSIZE 4096            // Data
+#define NCH   8               // Number of Chanels
+#define FS    2048	          // Frequency Sampling 
 #define QLV_BYTES_PER_WORD 2  // uint16 // Quantisation LeVel, number  
                               // of bytes per variable. Scale factor
 #define DSIZE2 (DSIZE/QLV_BYTES_PER_WORD)
