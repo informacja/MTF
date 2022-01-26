@@ -163,7 +163,7 @@ Listing 1. Konfiguracja aplikacji EMG Analyzer transferującej sygnał użyteczn
 ```cpp
 #define DSIZE 4096            // Data
 #define NCH   8               // Number of Chanels
-#define FS    2048	          // Frequency Sampling 
+#define FS    2048            // Frequency Sampling 
 #define QLV_BYTES_PER_WORD 2  // uint16 // Quantisation LeVel, number  
                               // of bytes per variable. Scale factor
 #define DSIZE2 (DSIZE/QLV_BYTES_PER_WORD)
