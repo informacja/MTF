@@ -5,7 +5,7 @@
 
 >![wspomnienia](figury/Image%202022-02-01.jpeg)
 >
-> Kolejno od lewej: inż. Arkadiusz Grzywa, prof. Jan Tadeusz Duda, inż. Piotr Szczepan Wawryka, x. Krzysztof Pach
+> Kolejno od lewej: inż. Arkadiusz Grzywa, prof. Jan Tadeusz Duda, inż. Piotr Szczepan Wawryka, x. mgr Krzysztof Pach
 
 
 ## Wprowadzenie
