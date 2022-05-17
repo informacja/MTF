@@ -63,14 +63,14 @@ Ewykl = 2;
 
         [secondAudio fs] = audioread(s);
         tempData = secondAudio(begin*fs+1:finish*fs,:);
-if (0)
+if (1)
     tempData = filterButter(tempData);
 else
        Yoryg = tempData;
     if(wgEnerg>1) y0=Yoryg(1); for(n=1:Ldsz) Yoryg(n)=y0*alfa+Yoryg(n); y0=Yoryg(n); end, end 
     meanYoryg=mean(Yoryg); 
     tempData=sign(Yoryg-meanYoryg).*(Yoryg-meanYoryg).^Ewykl;
-    tempData = filterButter(tempData);
+%     tempData = filterButter(tempData);
 %     tx=sprintf('Sygnal ENERGII Y=Sygn^%d',Ewykl); txspac=''; 
 end
     for k = 1:8;    
