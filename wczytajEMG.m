@@ -19,26 +19,26 @@ if(~BigData)
 %     fnames = [fnames "7szybkieRuszanienaprzemienne/srodkowy.wav"];
 %     fnames = [fnames "7szybkieRuszanienaprzemienne/serdeczny.wav"];
 %     fnames = [fnames "7szybkieRuszanienaprzemienne/mały.wav"]; %../bioniczna/bioniczna/data/01108.wav"
-    fnames = [fnames "serdecznyzgiecieiwyprost.wav"];
+%     fnames = [fnames "serdecznyzgiecieiwyprost.wav"];
 %     fnames = [fnames "serdecznyzgiecieiwyprost2.wav"];
 %     fnames = [fnames "7szginanie2.wav"]; % zawiera pik
 %     fnames = [fnames "edward\zginanie.wav"];    
 %     fnames = [fnames "7sZginanie.wav"];  
 % 
-    fnames = [fnames "krystynka/serdeczny.wav"];
+%     fnames = [fnames "krystynka/serdeczny.wav"];
 %     fnames = [fnames "krystynka/zginanie.wav"];
 %     fnames = [fnames "krystynka/zginanie1.wav"];
 %     fnames = [fnames "krystynka/zginanie2.wav"];
 %     fnames = [fnames "krystynka/zginanie3.wav"];
 %     fnames = [fnames "krystynka/zginanie4.wav"];
 %     fnames = [fnames "tomasz/zginanie.wav"];
-    fnames = [fnames "tomasz/serdeczny.wav"];
+%     fnames = [fnames "tomasz/serdeczny.wav"];
 %     fnames = [fnames "tomasz/thub.wav"];
 %  fnames = [fnames "tomasz/viktoria.wav"];
 % fnames = [fnames "tomasz/serdeczny2.wav"];  
-fnames = [fnames "tomasz/serdeczny3.wav"]; 
-fnames = [fnames "krzysztof/serdeczny.wav"];
-fnames = [fnames "monika/serdeczny.wav"];   
+% fnames = [fnames "tomasz/serdeczny3.wav"]; 
+% fnames = [fnames "krzysztof/serdeczny.wav"];
+% fnames = [fnames "monika/serdeczny.wav"];   
 fnames = [fnames "serdecznyPiotr.wav"];   
 
 

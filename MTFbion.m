@@ -21,7 +21,7 @@ if(Symul)
     nrwykr=1:Lszer; %[1:Ldsz];
     tx=sprintf('Badany sygnal SYMULOWANY Ysyg(%d)',Ldsz);
 else
-    if(Odczyt) wczytajEMG; Odczyt=0; end
+    if(Odczyt) wczytajEMG1s; Odczyt=0; end
     SZEREGI = data;
     nFigAll0=99+2*Integr;
     if(BSS) nFigAll0=nFigAll0+2; end, % Blind source separation ============
@@ -32,6 +32,30 @@ else
     nrwykr=1:Lszer; %[1:Ldsz];
     alfa=1-1/tauf; %0; %400; %200; 
 end
+
+window = 1/50;
+fs = 2048;
+wLen = int32(window*fs);
+
+%     figure(1000+k);
+%     subplot(8,k,1);
+
+figure(1000);
+for k = 1:8;    
+    dataW(:,k) = rms(data(1:wLen,1));
+    for i = 1:wLen
+        dataW = [dataW rms(data(1+wLen*i, k))];
+    end
+    subplot(8,1,k);
+    plot(dataW);
+    dataW = [];
+end
+
+% yTrB(1:Kb,1)=zeros(Kb,1); NB=length(Yoryg);
+% for(n=Kb+1:NB) yTrB(n,1)=-afB(wgEn+1,2:Ka)*yTrB(n-[1:Ka-1],1)+bfB(wgEn+1,1:Kb)*Yoryg(n-[0:Kb-1],1); end, 
+            
+return;
+
 Lk=0; nfig0=2; txtau='\tau'; txDelta='\Delta'; 
 % ====== Parametry MTF ===============
 % Tu okres składowej cyklicznej - szerokość pasma filtru MTF
