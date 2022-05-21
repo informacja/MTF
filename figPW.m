@@ -11,7 +11,7 @@ if(nargin==1) fprintf('%s\n%s', "figPW(nrPliku = 1, nrKol=1, ext='png', katalog=
 % end;
 if(nargin<6) FigsTZ=0; end;  
 if(nargin<5) wariantNazw=1; end;
-if(nargin<4 || nargin == 1 ) katalog='figury\'; end; if ~exist(katalog, 'dir') mkdir (katalog); end;
+if(nargin<4 || nargin == 1 ) katalog='figury/'; end; if ~exist(katalog, 'dir') mkdir (katalog); end;
 if(nargin<3) ext ='fig'; end;
     
     if(nargin<2) % jeœli jeden parametr    
