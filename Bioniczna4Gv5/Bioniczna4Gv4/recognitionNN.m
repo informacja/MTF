@@ -1,4 +1,5 @@
-generateMatFile( [1 2 11 13], [66:109])
+RMS = 1; FButter = 0; znakowanaMoc = 0;
+generateMatFile( [1 2 11 13], [66:109], RMS, FButter, znakowanaMoc)
 load('dataEMGunique4gesture.mat');
 feat=rawData'; 
 
@@ -12,8 +13,6 @@ net = feedforwardnet(20);
 view(net);
 
 [ net tr]  = train(net,feat,labelB);
-
-plotperform(tr)
 
 testX = feat(:,tr.testInd);
 testT = labelB(:,tr.testInd);
@@ -33,7 +32,11 @@ plotconfusion(testT,testY)
 testall = net(feat);
 [c cm] =confusion(testall,labelB);
 cm
-fprintf('Percentage Correct All   : %f%%\n', 100*(1-c));
+str = sprintf('Percentage Correct All   : %f%% RMS: %i, Butter: %i, Signum: %i\n', 100*(1-c),RMS,FButter,znakowanaMoc);
+
+plotperform(tr)
+sgtitle(str);
+figPW( int2str(RMS^1+ FButter^2+znakowanaMoc^3),0, 'png', 'Dawid', 1, 0,3)
 
 %--------------------------------------------------------------------------
 wb = getwb(net);

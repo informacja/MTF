@@ -3,7 +3,7 @@
 Odczyt=1; 
 if(~exist('Odczyt','var')) clear all; Odczyt=1; data=[]; else if(Odczyt) clear all; data=[]; Odczyt=1; end, end
 global ax1 ax2;
-Symul=0; wgEnerg=2;  Integr=1; BSS=3; BigData=0;
+Symul=0; wgEnerg=2;  Integr=1; BSS=3; BigData=1;
 % BSS=1  sam Blind; BSS=2 sama Ortogon.bez Blind;  BSS=11 lub >12 sama dekorelacja
 % BSS=11 dekorelacja i Blind; BSS==12 dekorelacja i ortogon;  
 tStart=tic; 

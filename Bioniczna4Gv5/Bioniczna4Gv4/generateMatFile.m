@@ -1,4 +1,4 @@
-function [fileImportName] = generateMatFile( selectFeaturesNr, selectPersonNr)
+function [fileImportName] = generateMatFile( selectFeaturesNr, selectPersonNr, RMS, FButter, znakowanaMoc)
 
 % Gestures numeration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,31 +61,39 @@ tempData2 = [];
 wgEnerg = 1;
 Ewykl = 2;
 
-        [secondAudio fs] = audioread(s);
-        tempData = secondAudio(begin*fs+1:finish*fs,:);
-if (1)
+[secondAudio fs] = audioread(s);
+tempData = secondAudio(begin*fs+1:finish*fs,:);
+
+if (FButter)
     tempData = filterButter(tempData);
-else
+end
+
+if (znakowanaMoc)
        Yoryg = tempData;
-    if(wgEnerg>1) y0=Yoryg(1); for(n=1:Ldsz) Yoryg(n)=y0*alfa+Yoryg(n); y0=Yoryg(n); end, end 
+%     if(wgEnerg>1) y0=Yoryg(1); for(n=1:Ldsz) Yoryg(n)=y0*alfa+Yoryg(n); y0=Yoryg(n); end, end 
     meanYoryg=mean(Yoryg); 
     tempData=sign(Yoryg-meanYoryg).*(Yoryg-meanYoryg).^Ewykl;
 %     tempData = filterButter(tempData);
 %     tx=sprintf('Sygnal ENERGII Y=Sygn^%d',Ewykl); txspac=''; 
 end
-    for k = 1:8;    
-        dataW(:,k) = rms(tempData(1:wLen,1));
-        for i = 1:wLen
-            dataW = [dataW rms(tempData(1+wLen*i, k))];
+    
+    if(RMS)
+        for k = 1:8;    
+            dataW(:,k) = rms(tempData(1:wLen,1));
+            for i = 1:wLen
+                dataW = [dataW rms(tempData(1+wLen*i, k))];
+            end
+            tempData2 = [tempData2 dataW];
+            dataW = [];
         end
-        tempData2 = [tempData2 dataW];
-        dataW = [];
+     rawData = [rawData; tempData2]; %d
+    
+    else
+    %     figure(tempGestureNumber+1), plot(tempData); hold on; title(file(fileNo).name);
+    %     figure(2*tempGestureNumber+3), plot(audioread(s)); hold on;title(file(fileNo).name);
+    %     legend; figure(tempPersonNumber);plot(audioread(s));
+        rawData = [rawData; tempData]; %dodanie info o nr gestu
     end
-
-%     figure(tempGestureNumber+1), plot(tempData); hold on; title(file(fileNo).name);
-%     figure(2*tempGestureNumber+3), plot(audioread(s)); hold on;title(file(fileNo).name);
-%     legend; figure(tempPersonNumber);plot(audioread(s));
-    rawData = [rawData; tempData2]; %dodanie info o nr gestu
 end
 
 dimX = length(labelsVector);
