@@ -1,5 +1,5 @@
-RMS = 1; FButter = 0; znakowanaMoc = 0;
-generateMatFile( [1 2 11 13], [66:109], RMS, FButter, znakowanaMoc)
+RMS = 1; FButter = 0; znakowanaMoc = 1; lOsob = 108; lStart = 87;
+generateMatFile( [1 2 11 13], [lStart:lOsob], RMS, FButter, znakowanaMoc)
 load('dataEMGunique4gesture.mat');
 feat=rawData'; 
 
@@ -36,7 +36,7 @@ str = sprintf('Percentage Correct All   : %f%% RMS: %i, Butter: %i, Signum: %i\n
 
 plotperform(tr)
 sgtitle(str);
-figPW( int2str(RMS^1+ FButter^2+znakowanaMoc^3),0, 'png', 'Dawid', 1, 0,3)
+figPW( int2str(RMS^1+ FButter^2+znakowanaMoc^3+lOsob),int2str(lOsob-lStart), 'png', 'Dawid/', 1, 0,3)
 
 %--------------------------------------------------------------------------
 wb = getwb(net);

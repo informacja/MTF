@@ -1,8 +1,8 @@
 function [Y] = filterButter(data)
 %Filtracja pasmowa
 FS=2048;
-order    =      5;
-fcutlow  =    25;
+order    =    5;
+fcutlow  =   10;
 fcuthigh =  500;
  
 
