@@ -1,3 +1,4 @@
 
 *.docx#
 *.asv
+.DS_Store
