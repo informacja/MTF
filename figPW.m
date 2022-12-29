@@ -14,7 +14,7 @@ if(nargin<5) wariantNazw=1; end;
 if(nargin<4 || nargin == 1 ) katalog='figury/'; end; if ~exist(katalog, 'dir') mkdir (katalog); end;
 if(nargin<3) ext ='fig'; end;
     
-    if(nargin<2) % jeœli jeden parametr    
+    if(nargin<2) % jeÂœli jeden parametr    
         if(nargin == 1 && isstr(nrPliku)) 
             fTitle = nrPliku; % string parametr
         else fTitle = '_'; end% do zapisywanej nazwy pliku
@@ -30,12 +30,14 @@ if(nargin<3) ext ='fig'; end;
             end
         end
     % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
-    % xlabel('Oœ rzeczywista'); ylabel('Oœ urojona'); 
+    % xlabel('OÂœ rzeczywista'); ylabel('OÂœ urojona'); 
     % legend(str{:}); 
+        [calling_mfile, index] = dbstack(0);
+        mcName = [calling_mfile(length(calling_mfile)).name '_'];
         [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
-        print( strcat(folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
-        fprintf("\t*%s\n", strcat("Zapisano: ", folderName, fTitle, nrName, num2str(get(gcf,'Number')), '.png'));
-        return % jeœli bez parametrów
+        print( strcat(folderName, fTitle, mcName, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
+        fprintf("\t*%s\n", strcat("Zapisano: ", folderName, fTitle, mcName, nrName, num2str(get(gcf,'Number')), '.png'));
+        return % jeÂœli bez parametrÃ³w
     end 
 
 h=gcf;
@@ -81,7 +83,7 @@ fprintf(1,'\n\t*Zapisano rysunek "%s.%s +.png"',filename,ext);
 %function FigsTZ( FigType, MyFigFile, h )
  if(FigsTZ)
     if( ~exist('FigType', 'var') ) FigType = 1; end;
-    LineWidth = 0.75;  % by³o 0.5
+    LineWidth = 0.75;  % byÅ‚o 0.5
     GridAlpha = 0.75;  % procentowo
     %LineStyle=['-'];
     MarkerSize = 3;
@@ -120,7 +122,7 @@ fprintf(1,'\n\t*Zapisano rysunek "%s.%s +.png"',filename,ext);
     set(0,'defaultLineLineWidth', LineWidth);         % set the default line width to lw
     set(0,'defaultLineMarkerSize',MarkerSize);        % set the default line marker size to msz
     %set(0,'defaultLineStyle',LineStyle);             % set default line style
-    set(0,'DefaultFigurePaperPositionMode','auto');   % automatyczna wielkoœæ rysunku
+    set(0,'DefaultFigurePaperPositionMode','auto');   % automatyczna wielkoÂœÄ‡ rysunku
     %set(0,'DefaultAxesColorOrder',[0,0,0]);           % czarna linia
     
     %set(h,'markers',MarkerSize);
@@ -130,8 +132,8 @@ fprintf(1,'\n\t*Zapisano rysunek "%s.%s +.png"',filename,ext);
     %'LineWidth',LineWidth,...
     %'MarkerSize',MarkerSize);
     
-    set(gcf,'DefaultLineLineWidth',LineWidth);             % gruboœæ linii wykresów
-    %set(gcf,'DefaultMarkerSize',MarkerSize);                % wielkoœæ markera                    
+    set(gcf,'DefaultLineLineWidth',LineWidth);             % gruboÂœÄ‡ linii wykresÃ³w
+    %set(gcf,'DefaultMarkerSize',MarkerSize);                % wielkoÂœÄ‡ markera                    
     set(gcf,'Units','centimeters');                        % jednostka wymiarowania okna
     set(gcf,'Position', [FigX0 FigY0 FigWidth FigHeight]); % wymiary okna: (x,y,dx,dy), (x,y)- lewy dolny
     set(gcf,'PaperPositionMode','auto');
