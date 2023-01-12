@@ -9,6 +9,7 @@ if(nargin==1) fprintf('%s\n%s', "figPW(nrPliku = 1, nrKol=1, ext='png', katalog=
 %     nrPliku = get(gcf,'Number');
 %     nrKol = get(gcf,'Tag');
 % end;
+katalog = 'figury/';
 if(nargin<6) FigsTZ=0; end;  
 if(nargin<5) wariantNazw=1; end;
 if(nargin<4 || nargin == 1 ) katalog='figury/'; end; if ~exist(katalog, 'dir') mkdir (katalog); end;
@@ -34,7 +35,7 @@ if(nargin<3) ext ='fig'; end;
     % legend(str{:}); 
         [calling_mfile, index] = dbstack(0);
         mcName = [calling_mfile(length(calling_mfile)).name '_'];
-        [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
+        [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); folderName = strcat(katalog, folderName);%if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
         print( strcat(folderName, fTitle, mcName, nrName, num2str(get(gcf,'Number')), '.png'),'-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
         fprintf("\t*%s\n", strcat("Zapisano: ", folderName, fTitle, mcName, nrName, num2str(get(gcf,'Number')), '.png'));
         return % jeli bez parametrów
