@@ -1,117 +1,318 @@
-% Program do estymacji nieparametrycznej; 
-clear all; 
-typKer(1,:)='prostok';
-typKer(2,:)='cosinus';
-typKer(3,:)='trojkot';
-typKer(4,:)='gaussow';
-% .............................................
-% Obiekt; y(n)=f(V(k,n))+Z(n)
-% Wspolczynniki A=[a0 av1 av2 av3 av12 av13 av23 av1_2 av2_2 av3_2]
-a0=1; av1=15.5; av2=1.5; av3=1.5; av12=1500; av13=-150; av23=5.5; av1_2=1200; av2_2=1.2; av3_2=200;
-A=[a0 av1 av2 av3 av12 av13 av23 av1_2 av2_2 av3_2]; 
-Ld=500; 
-V=rand(3,Ld); 
-Yf=a0+av1*V(1,:)+av2*V(2,:)+av3*V(3,:)+av12*V(1,:).*V(2,:)+av13*V(1,:).*V(3,:)+av23*V(2,:).*V(3,:)+av1_2*V(1,:).^2+ av2_2*V(2,:).^2+av3_2*V(3,:).^2;
-sigZ=0.05; % względne odch.stand. zakocenia
-DY=max(Yf)-min(Yf); sigmaZ=sigZ*DY; Z=sigmaZ*randn(1,Ld); 
-Y=Yf+Z; % Dane empiryczne wyjscia 
-load abr_signal2.mat
-Y = abr_signal2{1}.data(1:500)';
-figure(11), plot(Y)
-figPW("fig")
-% -----------   Wykresy przekrojowe ---------------------------------------------
-figure(1); 
-subplot(3,1,1); plot(V(1,:),Y,'k.'); xlabel(sprintf('Dane Y(v_1), Ld=%d',Ld)); axis('tight'); 
-subplot(3,1,2); plot(V(2,:),Y,'k.'); xlabel(sprintf('Dane Y(v_2), Ld=%d',Ld)); axis('tight'); 
-subplot(3,1,3); plot(V(3,:),Y,'k.'); xlabel(sprintf('Dane Y(v_3), Ld=%d',Ld)); axis('tight');
-input(' ?? '); fprintf(1,'\nProsze czekac !!!! ');
-% ................. Regresja .....................................
-FI(:,1)=ones(Ld,1); 
-for(k=2:4) FI(:,k)=V(k-1,:)'; end
-FI(:,5)=[V(1,:).*V(2,:)]'; FI(:,6)=[V(1,:).*V(3,:)]'; FI(:,7)=[V(2,:).*V(3,:)]'; 
-for(k=8:10) FI(:,k)=[V(k-7,:)'].^2; end
-G=inv(FI'*FI); Aob=G*FI'*Y'; 
-% ............. Koniec obiektu - obserwacje sa w Y i V ..................................
-rKern=0.25; 
-% ............. Wybor typu jadra typK --------------------------------------
-typK='p'; typK='c'; typK='t'; %typK='g';
-r2Kern=rKern^2; wcKern=pi/(rKern/2); wtKern=1/(rKern); tsig=1.5; wgKern=tsig/(r2Kern)/2;
-txK=''; if(typK=='g') txK='\sigma_g'; txK=[sprintf('=%.1f*',tsig) txK]; end 
-Lobl=200; dv=1/(Lobl-1); v=[0:dv:1]; Lobl=length(v); dKvobl=round(Lobl/10); 
-L3=0; 
-% ------------ Obliczamy wartosci estymatora dla v1 przy ustalonych v2 i v3 ----------
-for(k=1:dKvobl: Lobl)
-    L3=L3+1; v3(L3)=v(k); L2=0;
-    yfp=a0+av3*v3(L3)+av3_2*v3(L3).^2;
-    for(m=1:dKvobl: Lobl) 
-        L2=L2+1; v2(L2)=v(m); 
-        yfp=yfp+av2*v2(L2)+av23*v2(L2)*v3(L3)+av2_2*v2(L2)^2;
-        for(i=1:Lobl)
-            Mod(L3).yf(L2,i)=yfp+av1*v(i)+av12*v(i)*v2(L2)+av13*v(i)*v3(L3)+av1_2*v(i)^2;
-            lyS=0; Sy=0; 
-            for(n=1:Ld) % Dla obliczanego Y^(v(i)) obliczamy f.jšdra dla wszystkich obserwacji n
-                dV3=(V(3,n)-v3(L3));  % dlugosc 3.ciej wspolrzednej
-                if(abs(dV3)<=rKern) 
-                    dV2=(V(2,n)-v2(L2)); % dlugosc 2.giej wspolrzednej
-                    if(abs(dV2)<=rKern) r2Dv=dV3^2+dV2^2;  
-                        if(r2Dv<r2Kern)
-                            r2Dv=r2Dv+(V(1,n)-v(i))^2; % Odleglosc Euclidesa punktu v od V(1:3,n)
-                            if(r2Dv<r2Kern) 
-                                switch(typK)
-                                    case 'c', wy=sqrt(r2Dv)*wcKern; lyS=lyS+wy; Sy=Sy+wy*Y(n); 
-                                    case 'p', lyS=lyS+1; Sy=Sy+Y(n);  
-                                    case 't', wy=1-sqrt(r2Dv)*wtKern; lyS=lyS+wy; Sy=Sy+wy*Y(n);
-                                    case 'g', wy=exp(-r2Dv*wgKern); lyS=lyS+wy; Sy=Sy+wy*Y(n);
-                                    otherwise, lyS=lyS+1; Sy=Sy+Y(n);   
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-            if(lyS==0) Mod(L3).ym(L2,i)=NaN; else Mod(L3).ym(L2,i)=Sy/lyS; end
-            fi(1)=1; fi(2)=v(i); fi(3)=v2(L2);  fi(4)=v3(L3); 
-            fi(5)=v(i)*v2(L2); fi(6)=v(i)*v3(L3); fi(7)=v2(L2)*v3(L3);  
-            fi(8)=v(i)^2; fi(9)=v2(L2)^2; fi(10)=v3(L3)^2;
-            Yob(L3).ym(L2,i)=fi*Aob; 
+function figPW(ext, FigType, katalog)
+
+if( nargin==1 && length(dbstack(1)) == 0 ) % if only one param & not runed from console
+    fprintf('%s\n%s\n',...
+    "figPW(ext = 'png', FigType = 0 do 4, katalog = 'figury/')",...
+    "figPW('svg', 4, 'figury/')"); 
+end
+
+if(nargin<1) ext ='png'; end;
+if(nargin<2) FigType=0; end;  
+if(nargin<3) katalog = 'figury/'; end;
+if ~exist(katalog, 'dir') mkdir (katalog); end;
+    
+    fTitle = ''; % do zapisywanej nazwy pliku
+    nrName = get( get(gcf,'Number'), 'Name' );
+    h1=get(gca,'title');
+    title=get(h1,'string');
+    if( isempty(title) )
+        if(nargin<1)
+        else
+            fTitle = [ datestr(now ,'yyyy-mm-dd_HH.MM.ss') '_'];  
+        end
+    else
+        fTitle = [ title '_' ];
+    end
+% title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
+% xlabel('O rzeczywista'); ylabel('O urojona'); 
+% legend(str{:}); 
+
+[calling_mfile, index] = dbstack(0);
+mcName = [calling_mfile(length(calling_mfile)).name '_'];
+[path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); folderName = strcat(katalog, folderName, "_");%if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
+filename = strcat(folderName, mcName, fTitle, nrName, num2str(get(gcf,'Number')));
+filenameExt = strcat(filename, '.png');
+
+if(nargin<2)   
+    print( filenameExt, '-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
+    fprintf("\t*%s\n", strcat("Zapisano: ", filenameExt));
+    return % jeżeli mniej niż 2 parametry
+end 
+
+h=gcf;
+set(h,'PaperOrientation','Landscape');
+%set(h,'Units','centimeters');
+%set(h,'OuterPosition',[1, 1, 29 21]);
+% set(h,'Position',2*get(h,'Position'));
+
+% fn = nextname(filename, int2str(nrKol), "") to do
+defaultExtension = 'fig';
+if( strcmpi(ext, defaultExtension) == 0 ) % case insensitive
+    if(defaultExtension(1) ~= '.') defaultExtension = ['.' defaultExtension]; end
+    saveas(h, strcat(filename, defaultExtension)); 
+    fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, defaultExtension);
+end
+
+if(ext(1) ~= '.') 
+    ext = ['.' ext]; 
+end
+saveas(h, strcat(filename, ext));
+fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, ext);
+
+%             zapiszFig(nrPliku, nrKol, 'fig');
+%             zapiszFig(nrPliku, nrKol, 'pdf');
+%             zapiszFig(nrPliku, nrKol, 'emf'); %!
+%             zapiszFig(nrPliku, nrKol, 'eps');
+%             zapiszFig(nrPliku, nrKol, 'tif');
+%             zapiszFig(nrPliku, nrKol, 'pcx');
+%             zapiszFig(nrPliku, nrKol, 'jpg');
+%             zapiszFig(nrPliku, nrKol, 'pbm');
+%             zapiszFig(nrPliku, nrKol, 'pgm');
+%             zapiszFig(nrPliku, nrKol, 'png');
+%             zapiszFig(nrPliku, nrKol, 'ppm');
+
+if( ~exist('FigType', 'var') ) FigType = 1; end;
+    LineWidth = 0.75;  % było 0.5
+    GridAlpha = 0.75;  % procentowo
+    %LineStyle=['-'];
+    MarkerSize = 3;
+    FontSizeTitle = 9;
+    FontSizeLabels = 9;
+    FontSizeTicks = 8;
+    FontSizeLegend = 8;%FontSizeLegend = 16;
+    Resolution = 1200;           % 150, 300, 600, 1200
+    
+    FigX0 = 2; FigY0 = 2;        % (left,down) corner of the window
+    FigWidthShort = 5.75;        % window X size (in centimeters) - all = fig + text
+    FigWidthLong = 2*5.75;       % window X size (in centimeters) - all = fig + text
+    FigHeight = 4.25;            % window Y size 4.25
+    PosFigLong  = [.18/2 .2 .89  .690];   % Dell  % PosFigLong  = [.095 .20 .87  .68];   % Asus
+    %PosFigShort = [.175  .2 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
+     PosFigShort = [.175  .195 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
+    %PosFigShort = [.15   .2 .775 .690];   % Dell  % [.175  .2 .775 .725];   % Dell PosFigShort = [.195 .205 .775 .68];  % Asus
+    font = 'Times'; % 'Times';
+    if( FigType==1 ) % 1 long figure
+       FigWidth = FigWidthLong; PosFig = PosFigLong; 
+    end
+    if( FigType==2 ) % 2 short figures, side by side
+       FigWidth = FigWidthShort; PosFig = PosFigShort; 
+    end
+    if( FigType==3 ) % 2 as is on monitor
+       set(gcf,'Units','centimeters')
+       PosFig = get(gcf,'Position'); FigWidth = PosFig(3);
+%        set(gcf,'Units','normalized'); PosFig = get(gcf,'Position');;
+%        FigWidth = FigWidthLong; PosFig = PosFigLong*2; 
+       PosFig = get(gca,'Position');
+    end
+    if( FigType==4 ) % LM
+       set(gcf,'Units','centimeters')
+       PosFig = get(gcf,'Position'); FigWidth = PosFig(3);       PosFig = get(gca,'Position');
+        FontSizeTitle  = 14;
+        FontSizeLabels = 14;
+        FontSizeTicks  = 14;
+        FontSizeLegend = 14;
+        %todo margin values
+%       ?latex == tex? 
+%         xlabel('Time (s)','Interpreter','latex','FontSize',14)
+%         ylabel('Curvature (cm)','Interpreter','latex','FontSize',14)
+%         legend('$\bar{X}$','$\bar{X} + \sigma$','$\bar{X} - \sigma$','Interpreter','latex','FontSize',14)
+    end
+%     figure('Units','centimeters',...
+    %'Position',[FigX0 FigY0 FigWidth FigHeight],...
+    %'PaperPositionMode','auto');
+    
+    set(0,'defaultLineLineWidth', LineWidth);         % set the default line width to lw
+    set(0,'defaultLineMarkerSize',MarkerSize);        % set the default line marker size to msz
+    %set(0,'defaultLineStyle',LineStyle);             % set default line style
+    set(0,'DefaultFigurePaperPositionMode','auto');   % automatyczna wielkoć rysunku
+    %set(0,'DefaultAxesColorOrder',[0,0,0]);           % czarna linia
+    
+    %set(h,'markers',MarkerSize);
+    
+    %set(0,...
+    %'LineStyle',LineStyle,...
+    %'LineWidth',LineWidth,...
+    %'MarkerSize',MarkerSize);
+    
+    set(gcf,'DefaultLineLineWidth',LineWidth);             % gruboć linii wykresów
+    %set(gcf,'DefaultMarkerSize',MarkerSize);                % wielkoć markera                    
+    set(gcf,'Units','centimeters');                        % jednostka wymiarowania okna
+    set(gcf,'Position', [FigX0 FigY0 FigWidth FigHeight]); % wymiary okna: (x,y,dx,dy), (x,y)- lewy dolny
+    set(gcf,'PaperPositionMode','auto');
+%     PosFig = get(gcf,'Position');
+    %set(gca,'Units','centimeters'); %JB
+    set(gca,...                   % axis features
+     'Units','normalized',...
+     'LineWidth',LineWidth,...
+     'GridLineStyle',':', ...
+     'GridAlpha',GridAlpha, ...
+     'Position',PosFig,...   % (left,bottom) (width,hight) - relative, inside the window
+     'FontUnits','points',...
+     'FontWeight','normal',...
+     'FontSize',FontSizeTicks,...
+     'FontName',font);
+    set(get(gca,'Xlabel'),...
+      'FontUnits','points',...
+      'FontWeight','normal',...
+      'FontSize',FontSizeLabels,...
+      'Interpreter','tex',...
+      'FontName',font);
+    set(get(gca,'Ylabel'),...
+      'FontUnits','points',...
+      'FontWeight','normal',...
+      'FontSize',FontSizeLabels,...
+      'Interpreter','tex',...
+      'FontName',font);
+    set(get(gca,'Title'),...
+      'FontUnits','points',...
+      'FontWeight','normal',...
+      'FontSize',FontSizeTitle,...
+      'Interpreter','tex',...
+      'FontName',font);
+    set(get(gca,'Legend'),...
+      'FontUnits','points',...
+      'FontSize',FontSizeLegend,...
+      'Interpreter','tex',...
+      'Location','NorthEast',...
+      'FontName',font);
+    % Legenda
+    child = get( gcf, 'Children' );
+    for i = 1:length( child )
+        tag = get( child(i), 'Tag' );
+        if( 1 == strcmp( tag, 'legend' ) )
+            set( child(i),'FontSize',FontSizeLegend,'LineWidth',LineWidth);
+            break;
         end
     end
+    % MyFigFile = fn
+    print( strcat(filename,'.png'),'-dpng', '-r600');
+    % print( strcat(MyFigFile,'.eps'),'-depsc', '-r600');
+%  end
 end
-switch(typK) case 'c', nk=2; case 'p', nk=1; case 't', nk=3; case 'g', nk=4; end
-nf0=nk; figure(nf0+1)
-for(k3=2:L3)
-    subplot(3,3,k3-1); wybrv2=[1 2 4 5 7 9]; lw=length(wybrv2); kolV2='kbrmgc'; 
-    txt=sprintf('Jadro %s: rKern=%.3f%s, v2=',typKer(nk,:),rKern,txK); for(i=1:lw) txt=[txt sprintf('%.2f %c, ',v2(wybrv2(i)),kolV2(i))]; end
-    plot(v,Mod(k3).ym(1,:),'k',v,Mod(k3).ym(2,:),'b',v,Mod(k3).ym(4,:),'r',v,Mod(k3).ym(5,:),'m',v,Mod(k3).ym(7,:),'g',v,Mod(k3).ym(9,:),'c'); 
-    hold on; 
-    plot(v,Mod(k3).yf(1,:),'k:',v,Mod(k3).yf(2,:),'b:',v,Mod(k3).yf(4,:),'r:',v,Mod(k3).yf(5,:),'m:',v,Mod(k3).yf(7,:),'g:',v,Mod(k3).yf(9,:),'c:'); 
-    
-    plot(v,Yob(k3).ym(1,:),'k--',v,Yob(k3).ym(2,:),'b--',v,Yob(k3).ym(4,:),'r--',v,Yob(k3).ym(5,:),'m--',v,Yob(k3).ym(7,:),'g--',v,Yob(k3).ym(9,:),'c--'); 
-    hold off;
-    xlabel(sprintf('v3=%.3f',v3(k3))); ylabel='y(v3,v2,v1)'; 
-    axis('tight'); 
-end
-subplot(3,3,2); title(txt); 
-figure(nf0+2)
-for(k3=2:L3)
-    subplot(3,3,k3-1); 
-    mesh(Mod(k3).ym); %mesh([v2,v],Mod(k3).ym); %waterfall(Mod(k3).ym); 
-    xlabel(sprintf('v3=%.3f',v3(k3))); ylabel='y(v3,v2,v1)'; 
-    axis('tight'); 
-end
-subplot(3,3,2); title(txt); 
-figure(6)
-for(k3=2:L3)
-    subplot(3,3,k3-1); 
-    waterfall(Mod(k3).ym); 
-    xlabel(sprintf('v3=%.3f',v3(k3))); ylabel='y(v3,v2,v1)'; 
-    axis('tight'); 
-end
-subplot(3,3,2); title(txt); 
 
-waterfall(Mod(5).ym); mesh(Mod(5).ym)
-% put this at the end of your code
-if ~isfile('figPSW.m')
- urlwrite ('https://raw.githubusercontent.com/informacja/MTF/main/figPSW.m', 'figPSW.m');
+
+ function [name,val] = nextname(bnm,sfx,ext,otp) %#ok<*ISMAT>
+% Return the next unused filename, incrementing a numbered suffix if required.
+%
+% (c) 2017-2021 Stephen Cobeldick
+%
+%% Examples %%
+%
+%%% Current directory contains files 'A1.m', 'A2.m', and 'A4.m':
+%
+% >> nextname('A','1','.m')
+% ans = 'A3.m'
+%
+% >> nextname('A','001','.m')
+% ans = 'A003.m'
+%
+%%% Subdirectory 'HTML' contains folders 'B(1)', 'B(2)', and 'B(4)':
+%
+% >> nextname('HTML\B','(1)','')
+% ans = 'B(3)'
+%
+% >> nextname('HTML\B','(001)','')
+% ans = 'B(003)'
+%
+% >> nextname('HTML\B','(1)','',false) % default = name only.
+% ans = 'B(3)'
+% >> nextname('HTML\B','(1)','',true) % prepend same path as the input name.
+% ans = 'HTML\B(3)'
+%
+%% Inputs and Outputs %%
+%
+%%% Input Arguments (**==default):
+% bnm = CharVector or StringScalar giving the base filename or folder name,
+%       with an absolute or relative file path if required.
+% sfx = CharVector or StringScalar of the suffix to append, contains exactly
+%       one integer number (use leading zeros to specify the number of digits).
+% ext = CharVector or StringScalar of the file extension, if any. For folder
+%       names or files without extensions use ''.
+% otp = LogicalScalar, true/false** -> output with same path as input name / name only. 
+%
+%% Input Wrangling %%
+%
+bnm = nn1s2c(bnm);
+sfx = nn1s2c(sfx);
+ext = nn1s2c(ext);
+%
+msg = 'Input <%s> must be a 1xN char vector or a scalar string.';
+assert(ischar(bnm)&&ndims(bnm)==2&&size(bnm,1)==1,'SC.nextname:bnm:NotText',msg,'bnm')
+assert(ischar(sfx)&&ndims(sfx)==2&&size(sfx,1)==1,'SC:nextname:sfx:NotText',msg,'sfx')
+assert(ischar(ext)&&ndims(ext)==2&&size(ext,1)<=1,'SC:nextname:ext:NotText',msg,'ext')
+%
+tkn = regexp(sfx,'\d+','match');
+val = sscanf(sprintf(' %s',tkn{:}),'%lu'); % faster than STR2DOUBLE.
+assert(numel(val)==1,'SC:nextname:sfx:NotOneInteger',...
+	'The suffix must contain exactly one integer value (any number of digits).')
+wid = numel(tkn{1});
+%
+%% Get Existing File / Folder Names %%
+%
+[inpth,fnm,tmp] = fileparts(bnm);
+fnm = [fnm,tmp];
+%
+% Find files/subfolders on that path:
+raw = dir(fullfile(inpth,[fnm,regexprep(sfx,'\d+','*'),ext]));
+%
+% Special case of exactly one matching subfolder (Octave):
+if ~all(strncmp({raw.name},fnm,numel(fnm)))
+	raw = dir(fullfile(inpth,'*'));
 end
-figPSW;
+%
+% Generate regular expression:
+rgx = regexprep(regexptranslate('escape',sfx),'\d+','(\\d+)');
+rgx = ['^',regexptranslate('escape',fnm),rgx,regexptranslate('escape',ext),'$'];
+%
+% Extract numbers from names:
+tkn = regexpi({raw.name},rgx,'tokens','once');
+tkn = [tkn{:}];
+%
+%% Identify First Unused Name %%
+%
+if numel(tkn)
+	% For speed these values must be converted before the WHILE loop:
+	vec = sscanf(sprintf(' %s',tkn{:}),'%lu');  % faster than STR2DOUBLE.
+	%
+	% Find the first unused name, starting from the provided value:
+	while any(val==vec)
+		val = val+1;
+	end
+end
+%
+name = [fnm,regexprep(sfx,'\d+',sprintf('%0*u',wid,val)),ext];
+%
+if nargin>3
+    assert(islogical(otp)&&isscalar(otp),'SC:nextname:otp:NotLogicalScalar',...
+		'Input <otp> must be a scalar logical (i.e. true or false).')
+    if otp
+        name = fullfile(inpth,name);
+    end
+end
+%
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%nextname
+function arr = nn1s2c(arr)
+% If scalar string then extract the character vector, otherwise data is unchanged.
+if isa(arr,'string') && isscalar(arr)
+	arr = arr{1};
+end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%nn1s2c
+
+%% make new figure with one subplot of from old fig
+% nFig = 6;
+% for i=14
+%     figure(nFig); ncol = i;
+%     subplot(4,4,ncol);
+%     ax1=gca;
+%     
+%     figure;
+%     tcl=tiledlayout(1,1);
+%     ax1.Parent=tcl;
+%     ax1.Layout.Tile=1;
+% %     ax1.XLabel = tcl.XLabel      
+% %     ax1.YLabel = tcl.YLabel
+%     
+%     figPW(nFig, ncol, 'png', 'figury/', 1, 1, 3)
+% end
