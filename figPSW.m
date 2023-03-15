@@ -1,7 +1,7 @@
 h2 = findall(groot,'Type','figure');
 h3 = findobj('Type','figure');
 
-if ~isfile('figPW.m')
+if ~isfile('figPW.m') && ~isfile(fullfile(userpath)+"/figPW.m")
  urlwrite ('https://raw.githubusercontent.com/informacja/MTF/main/figPW.m', 'figPW.m');
 end
 
