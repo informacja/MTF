@@ -31,7 +31,8 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
 mcName = [calling_mfile(length(calling_mfile)).name '_'];
 [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); folderName = strcat(katalog, folderName, "_");%if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
 filename = strcat(folderName, mcName, fTitle, nrName, num2str(get(gcf,'Number')));
-filenameExt = strcat(filename, '.png');
+filename = regexprep(filename, {'[%()*:!@#$^& ]+', '_+$'}, {'_', ''});
+filenameExt = strcat(filename, '.png'); % Default filename
 
 if(nargin<2)   
     print( filenameExt, '-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
