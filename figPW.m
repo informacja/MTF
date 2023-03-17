@@ -21,7 +21,7 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
             fTitle = [ datestr(now ,'yyyy-mm-dd_HH.MM.ss') '_'];  
         end
     else
-        fTitle = [ title '_' ];
+        fTitle = strcat(title, "_");
     end
 % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
 % xlabel('O rzeczywista'); ylabel('O urojona'); 
