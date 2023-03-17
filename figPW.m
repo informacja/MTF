@@ -12,17 +12,25 @@ if(nargin<3) katalog = 'figury/'; end;
 if ~exist(katalog, 'dir') mkdir (katalog); end;
     
     fTitle = ''; % do zapisywanej nazwy pliku
-    nrName = get( get(gcf,'Number'), 'Name' );
     h1=get(gca,'title');
-    title=get(h1,'string');
-    if( isempty(title) )
-        if(nargin<1)
+    handle = gcf;
+    tmp = handle.Children(1);
+   
+    if( exist('tmp.String','var') == 0 )
+        title=get(h1,'string');
+        if( isempty(title) )
+            if(nargin<1)
+            else
+                fTitle = [ datestr(now ,'yyyy-mm-dd_HH.MM.ss') '_'];  
+            end
         else
-            fTitle = [ datestr(now ,'yyyy-mm-dd_HH.MM.ss') '_'];  
+            fTitle = strcat(title, "_");
         end
     else
-        fTitle = strcat(title, "_");
+        tmp = handle.Children(1).String;  
+        fTitle = strcat(tmp, "_");
     end
+    nrName = get( get(gcf,'Number'), 'Name' );
 % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
 % xlabel('O rzeczywista'); ylabel('O urojona'); 
 % legend(str{:}); 
