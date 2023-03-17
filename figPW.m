@@ -15,8 +15,14 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
     h1=get(gca,'title');
     handle = gcf;
     tmp = handle.Children(1);
-   
-    if( exist('tmp.String','var') == 0 )
+    sgtitle = '';
+    try         
+        sgtitle = tmp.String;            
+    catch        
+        disp('Error getting sgtitle')
+    end
+
+    if( isempty(sgtitle) )
         title=get(h1,'string');
         if( isempty(title) )
             if(nargin<1)
@@ -27,7 +33,7 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
             fTitle = strcat(title, "_");
         end
     else
-        tmp = handle.Children(1).String;  
+        tmp = tmp.String;  
         fTitle = strcat(tmp, "_");
     end
     nrName = get( get(gcf,'Number'), 'Name' );
