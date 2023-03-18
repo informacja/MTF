@@ -7,7 +7,10 @@ end
 
 figpos = {'north','south','east','west','northeast','northwest','southeast','southwest','center','onscreen'};
 for i = 1:length(h2)
-    figure(h2(i))
-    movegui(cell2mat( figpos(mod(i,length(figpos)-1)+1) ));
+    H = figure(h2(i));
+    a = get(H,'Position');
+    H.WindowState = 'maximized';    
     figPW;
+    set(H,'Position',a);
+    movegui(cell2mat( figpos(mod(i,length(figpos)-1)+1) ));
 end
