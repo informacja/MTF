@@ -14,15 +14,20 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
     fTitle = ''; % do zapisywanej nazwy pliku
     h1=get(gca,'title');
     handle = gcf;
-    tmp = handle.Children(1);
-    sgtitle = '';
-    try         
-        sgtitle = tmp.String;            
+    tmp = handle.Children;
+    SGtitle = '';
+    try                 
+        for i = 1:length(tmp)
+            tmp = handle.Children(i);          
+            if(strcmp(get(tmp, 'type'), 'subplottext') == 1 ) 
+                SGtitle = tmp.String; 
+            end
+        end           
     catch        
         disp('Error getting sgtitle')
     end
 
-    if( isempty(sgtitle) )
+    if( isempty(SGtitle) )
         title=get(h1,'string');
         if( isempty(title) )
             if(nargin<1)
@@ -33,8 +38,8 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
             fTitle = strcat(title, "_");
         end
     else
-        tmp = tmp.String;  
-        fTitle = strcat(tmp, "_");
+%         tmp = tmp.String;  
+        fTitle = strcat(SGtitle, "_");
     end
     nrName = get( get(gcf,'Number'), 'Name' );
 % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
