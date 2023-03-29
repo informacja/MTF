@@ -50,8 +50,11 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
 mcName = [calling_mfile(length(calling_mfile)).name '_'];
 [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); folderName = strcat(katalog, folderName, "_");%if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
 filename = strcat(folderName, mcName, fTitle, nrName, num2str(get(gcf,'Number')));
-filename = regexprep(filename, {'[%()*:!@#$^& ]+', '_+$'}, {'_', ''});
-filenameExt = strcat(filename, '.png'); % Default filename
+filename = regexprep(filename, {'[%()*: ]+', '_+$'}, {'_', ''});
+if(ext(1) ~= '.') 
+    ext = strcat('.', ext); 
+end
+filenameExt = strcat(filename, ext); % Default filename
 
 if(nargin<2)   
     print( filenameExt, '-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
@@ -74,7 +77,7 @@ if( strcmpi(ext, defaultExtension) == 0 ) % case insensitive
 end
 
 if(ext(1) ~= '.') 
-    ext = ['.' ext]; 
+    ext = strcat('.', ext); 
 end
 saveas(h, strcat(filename, ext));
 fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, ext);
