@@ -50,7 +50,7 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
 mcName = [calling_mfile(length(calling_mfile)).name '_'];
 [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); folderName = strcat(katalog, folderName, "_");%if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
 filename = strcat(folderName, mcName, fTitle, nrName, num2str(get(gcf,'Number')));
-filename = regexprep(filename, {'[%()*: ]+', '_+$'}, {'_', ''});
+filename = regexprep(filename, {'[%()*:\\ ]+', '_+$'}, {'_', ''});
 if(ext(1) ~= '.') 
     ext = strcat('.', ext); 
 end
@@ -59,28 +59,26 @@ filenameExt = strcat(filename, ext); % Default filename
 if(nargin<2)   
     print( filenameExt, '-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
     fprintf("\t*%s\n", strcat("Zapisano: ", filenameExt));
+    if(nargin<1)   
+        copygraphics(gcf);
+    end
     return % jeżeli mniej niż 2 parametry
-end 
-
-h=gcf;
-set(h,'PaperOrientation','Landscape');
+end
+        
+h=gcf; % for saveas() 
+% set(h,'PaperOrientation','Landscape');
 %set(h,'Units','centimeters');
 %set(h,'OuterPosition',[1, 1, 29 21]);
 % set(h,'Position',2*get(h,'Position'));
 
 % fn = nextname(filename, int2str(nrKol), "") to do
-defaultExtension = 'fig';
+defaultExtension = '.fig';
 if( strcmpi(ext, defaultExtension) == 0 ) % case insensitive
-    if(defaultExtension(1) ~= '.') defaultExtension = ['.' defaultExtension]; end
+    if(defaultExtension(1) ~= '.') defaultExtension = strcat('.', defaultExtension); end
     saveas(h, strcat(filename, defaultExtension)); 
     fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, defaultExtension);
 end
 
-if(ext(1) ~= '.') 
-    ext = strcat('.', ext); 
-end
-saveas(h, strcat(filename, ext));
-fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, ext);
 
 %             zapiszFig(nrPliku, nrKol, 'fig');
 %             zapiszFig(nrPliku, nrKol, 'pdf');
@@ -129,16 +127,38 @@ if( ~exist('FigType', 'var') ) FigType = 1; end;
     end
     if( FigType==4 ) % LM
        set(gcf,'Units','centimeters')
-       PosFig = get(gcf,'Position'); FigWidth = PosFig(3);       PosFig = get(gca,'Position');
-        FontSizeTitle  = 14;
-        FontSizeLabels = 14;
-        FontSizeTicks  = 14;
-        FontSizeLegend = 14;
+%        PosFig = get(gcf,'Position'); FigWidth = PosFig(3);       PosFig = get(gca,'Position');
+%         FontSizeTitle  = 14;
+%         FontSizeLabels = 14;
+%         FontSizeTicks  = 14;
+%         FontSizeLegend = 14;
+%         set(0,'DefaultFigurePaperPositionMode','auto');
+        a=get(gcf,'children')
+        for i = 1:length(a)
+                ax = a(i);
+                pos = get(ax, 'Position');
+                pos(1) = 0.055;
+                pos(3) = 0.9;
+                set(ax, 'Position', pos)
+        end
+%no margin
+%  ax = gca;
+% outerpos = ax.OuterPosition;
+% ti = ax.TightInset; 
+% left = outerpos(1) + ti(1);
+% bottom = outerpos(2) + ti(2);
+% ax_width = outerpos(3) - ti(1) - ti(3);
+% ax_height = outerpos(4) - ti(2) - ti(4);
+% ax.Position = [left bottom ax_width ax_height];
+
         %todo margin values
 %       ?latex == tex? 
 %         xlabel('Time (s)','Interpreter','latex','FontSize',14)
 %         ylabel('Curvature (cm)','Interpreter','latex','FontSize',14)
 %         legend('$\bar{X}$','$\bar{X} + \sigma$','$\bar{X} - \sigma$','Interpreter','latex','FontSize',14)
+        saveas(h, strcat(filename, ext));
+        fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, ext);
+        return
     end
 %     figure('Units','centimeters',...
     %'Position',[FigX0 FigY0 FigWidth FigHeight],...
@@ -208,10 +228,18 @@ if( ~exist('FigType', 'var') ) FigType = 1; end;
         end
     end
     % MyFigFile = fn
-    print( strcat(filename,'.png'),'-dpng', '-r600');
+%     print( strcat(filename,'.png'),'-dpng', '-r600');
     % print( strcat(MyFigFile,'.eps'),'-depsc', '-r600');
 %  end
+
+    tmp = char(ext);
+    if(tmp(1) ~= '.')
+        ext = strcat('.', ext); 
+    end
+    saveas(h, strcat(filename, ext));
+    fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, ext);
 end
+% set(gcf,'Resize','off')
 
 
  function [name,val] = nextname(bnm,sfx,ext,otp) %#ok<*ISMAT>
