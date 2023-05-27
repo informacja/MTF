@@ -1,4 +1,4 @@
-function figPW(ext, FigType, katalog)
+function figPW(FigType, ext, katalog)
 
 if( nargin==1 && length(dbstack(1)) == 0 ) % if only one param & not runed from console
     fprintf('%s\n%s\n',...
@@ -6,42 +6,60 @@ if( nargin==1 && length(dbstack(1)) == 0 ) % if only one param & not runed from 
     "figPW('svg', 4, 'figury/')"); 
 end
 
-if(nargin<1) ext ='png'; end;
-if(nargin<2) FigType=0; end;  
+% addtimestamp TODO
+if(nargin<1) FigType=0; end;  %high DPI PNG
+if(nargin<2) ext ='png'; end;
 if(nargin<3) katalog = 'figury/'; end;
+
+% if FigType=="help"
+%     disp "help willbe herae What you want to know?";
+
+
+%parse 
+%figtype
+
+if(strcmpi(FigType,"nomargin")) FigType=4; end
+if(strcmpi(FigType,"maximize")) FigType=5; end
+
+%ext - optional
+
+
+
+
+
 if ~exist(katalog, 'dir') mkdir (katalog); end;
     
-    fTitle = ''; % do zapisywanej nazwy pliku
-    h1=get(gca,'title');
-    handle = gcf;
-    tmp = handle.Children;
-    SGtitle = '';
-    try                 
-        for i = 1:length(tmp)
-            tmp = handle.Children(i);          
-            if(strcmp(get(tmp, 'type'), 'subplottext') == 1 ) 
-                SGtitle = tmp.String; 
-            end
-        end           
-    catch        
-        disp('Error getting sgtitle')
-    end
+fTitle = ''; % do zapisywanej nazwy pliku
+h1=get(gca,'title');
+handle = gcf;
+tmp = handle.Children;
+SGtitle = '';
+try                 
+    for i = 1:length(tmp)
+        tmp = handle.Children(i);          
+        if(strcmp(get(tmp, 'type'), 'subplottext') == 1 ) 
+            SGtitle = tmp.String; 
+        end
+    end           
+catch        
+    disp('Error getting sgtitle')
+end
 
-    if( isempty(SGtitle) )
-        title=get(h1,'string');
-        if( isempty(title) )
-            if(nargin<1)
-            else
-                fTitle = [ datestr(now ,'yyyy-mm-dd_HH.MM.ss') '_'];  
-            end
+if( isempty(SGtitle) )
+    title=get(h1,'string');
+    if( isempty(title) )
+        if(nargin<1)
         else
-            fTitle = strcat(title, "_");
+            fTitle = [ datestr(now ,'yyyy-mm-dd_HH.MM.ss') '_'];  
         end
     else
-%         tmp = tmp.String;  
-        fTitle = strcat(SGtitle, "_");
+        fTitle = strcat(title, "_");
     end
-    nrName = get( get(gcf,'Number'), 'Name' );
+else
+%         tmp = tmp.String;  
+    fTitle = strcat(SGtitle, "_");
+end
+nrName = get( get(gcf,'Number'), 'Name' );
 % title([{'Dziedzina czasu'},{'Cha-ka skokowa'}]);  
 % xlabel('O rzeczywista'); ylabel('O urojona'); 
 % legend(str{:}); 
@@ -49,17 +67,19 @@ if ~exist(katalog, 'dir') mkdir (katalog); end;
 [calling_mfile, index] = dbstack(0);
 mcName = [calling_mfile(length(calling_mfile)).name '_'];
 [path, filename, Fext] = fileparts( mfilename('.')); [~, folderName] = fileparts(pwd()); folderName = strcat(katalog, folderName, "_");%if(nargin == 1) folderName = katalog; nrName=''; end;                     % nazwa TEGO *.m-pliku
-filename = strcat(folderName, mcName, fTitle, nrName, num2str(get(gcf,'Number')));
-filename = regexprep(filename, {'[%()*:\\ ]+', '_+$'}, {'_', ''});
+filename = strcat(mcName, fTitle, nrName, num2str(get(gcf,'Number')));
+filename = regexprep(filename, {'[%()*:\\" / ]+', '_+$'}, {'_', ''});
+if(size(filename,1) > 1) filename = filename(1);end;
+filename = strcat(folderName,filename);
 if(ext(1) ~= '.') 
     ext = strcat('.', ext); 
 end
 filenameExt = strcat(filename, ext); % Default filename
 
-if(nargin<2)   
+if(nargin<2&&FigType==0)   
     print( filenameExt, '-dpng', '-r300'); % Zapisz jako tenMPlik_nrOstatniejFigury.png 
     fprintf("\t*%s\n", strcat("Zapisano: ", filenameExt));
-    if(nargin<1)   
+    if(nargin==1)   
         copygraphics(gcf);
     end
     return % jeżeli mniej niż 2 parametry
@@ -118,28 +138,33 @@ if( ~exist('FigType', 'var') ) FigType = 1; end;
     if( FigType==2 ) % 2 short figures, side by side
        FigWidth = FigWidthShort; PosFig = PosFigShort; 
     end
-    if( FigType==3 ) % 2 as is on monitor
+    if( FigType==3 ) % 3 as is on monitor
        set(gcf,'Units','centimeters')
        PosFig = get(gcf,'Position'); FigWidth = PosFig(3);
 %        set(gcf,'Units','normalized'); PosFig = get(gcf,'Position');;
 %        FigWidth = FigWidthLong; PosFig = PosFigLong*2; 
        PosFig = get(gca,'Position');
     end
-    if( FigType==4 ) % LM
+    if( FigType==4 ) 
        set(gcf,'Units','centimeters')
 %        PosFig = get(gcf,'Position'); FigWidth = PosFig(3);       PosFig = get(gca,'Position');
-%         FontSizeTitle  = 14;
-%         FontSizeLabels = 14;
-%         FontSizeTicks  = 14;
-%         FontSizeLegend = 14;
-%         set(0,'DefaultFigurePaperPositionMode','auto');
-        a=get(gcf,'children')
+        a=get(gcf,'children');
         for i = 1:length(a)
-                ax = a(i);
-                pos = get(ax, 'Position');
-                pos(1) = 0.055;
-                pos(3) = 0.9;
-                set(ax, 'Position', pos)
+            ax = a(i);
+            if ax.Type == "subplottext" continue; end;
+            if ax.Type == "legend" continue; end;
+            outerpos = ax.OuterPosition;
+            ti = ax.TightInset; 
+            left = outerpos(1) + ti(1);
+            bottom = outerpos(2) + ti(2);
+            ax_width = outerpos(3) - ti(1) - ti(3);
+            ax_height = outerpos(4) - ti(2) - ti(4);
+            ax.Position = [left bottom ax_width ax_height];
+%                 ax = a(i);
+%                 pos = get(ax, 'Position');
+%                 pos(1) = 0.055;
+%                 pos(3) = 0.9;
+%                 set(ax, 'Position', pos);
         end
 %no margin
 %  ax = gca;
@@ -158,6 +183,19 @@ if( ~exist('FigType', 'var') ) FigType = 1; end;
 %         legend('$\bar{X}$','$\bar{X} + \sigma$','$\bar{X} - \sigma$','Interpreter','latex','FontSize',14)
         saveas(h, strcat(filename, ext));
         fprintf(1, ['\t* Zapisano rysunek "%s%s"\n'], filename, ext);
+        return
+    end
+    if( FigType==5 ) % 3 as is on monitor
+%        set(gcf,'Units','centimeters')
+       PosFig = get(gcf,'Position'); FigWidth = PosFig(3);
+%        set(gcf,'Units','normalized'); PosFig = get(gcf,'Position');;
+%        FigWidth = FigWidthLong; PosFig = PosFigLong*2; 
+       PosFig = get(gca,'Position');
+        H = figure(gcf);
+        a = get(H,'Position');
+        H.WindowState = 'maximized';    
+        figPW(ext);
+        set(H,'Position',a);
         return
     end
 %     figure('Units','centimeters',...
