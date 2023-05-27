@@ -9,11 +9,13 @@ LwAm=round(length(X)/podzial);
 %for(nfw=1:1)
 % ================ Synteza filtru MTF ==========================
 % ................ #Wybor typu filtru .......................
-typMTF=[5 5 5 3]; ntyp=1; nfw=1; %[3 3 5 3]; % typ filtru: 3 - Z1 - filtr koncowy zwykly; 5 - z3 - trend 3.go rzÄ™du 
-ntypZ=typMTF(1);     
-[M, Fzw]=MTFdesign(ntypZ, Tu); %[M, Fzw, Ff, F0]=MTFdesign(ntypZ, Tu);
-MTF(nfw).Tu=Tu; MTF(nfw).M=M; MTF(nfw).Fzw=Fzw; MTF(nfw).F0=[]; MTF(nfw).Ff=[];
-%end
+if(isempty(MTF(nfw).Tu))
+    typMTF=[5 5 5 3]; ntyp=1; %nfw=1; %[3 3 5 3]; % typ filtru: 3 - Z1 - filtr koncowy zwykly; 5 - z3 - trend 3.go rzÄ™du
+    ntypZ=typMTF(1);
+    [M, Fzw]=MTFdesign(ntypZ, Tu); %[M, Fzw, Ff, F0]=MTFdesign(ntypZ, Tu);
+    MTF(nfw).Tu=Tu; MTF(nfw).M=M; MTF(nfw).Fzw=Fzw; MTF(nfw).F0=[]; MTF(nfw).Ff=[];
+else Tu=MTF(nfw).Tu; M=MTF(nfw).M; Fzw=MTF(nfw).Fzw;
+end
 % ======================================================================
 % X - wynik fft
 Ayf = abs(X(1:LwAm'));
